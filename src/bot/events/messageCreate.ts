@@ -6,6 +6,24 @@ import { badgeService } from '../../services/badgeService';
 import { isNightTime } from '../../utils/helpers';
 import { logger } from '../../utils/logger';
 
+/**
+ * Calculate XP based on message length
+ * 1-20 chars: 1 XP
+ * 21-50 chars: 2 XP
+ * 51-100 chars: 3 XP
+ * 101-200 chars: 4 XP
+ * 200+ chars: 5 XP
+ */
+function calculateMessageXP(content: string): number {
+  const length = content.trim().length;
+
+  if (length <= 20) return 1;
+  if (length <= 50) return 2;
+  if (length <= 100) return 3;
+  if (length <= 200) return 4;
+  return 5;
+}
+
 export async function handleMessageCreate(message: Message): Promise<void> {
   // Ignore bots
   if (message.author.bot) return;
@@ -22,8 +40,11 @@ export async function handleMessageCreate(message: Message): Promise<void> {
       return;
     }
 
+    // Calculate XP based on message length
+    const messageXP = calculateMessageXP(message.content);
+
     // Award XP
-    const xpGain = await xpService.awardXP(message.member, 'message');
+    const xpGain = await xpService.awardXP(message.member, 'message', messageXP);
 
     if (xpGain) {
       // Increment message count

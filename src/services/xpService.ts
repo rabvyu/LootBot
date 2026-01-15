@@ -94,7 +94,7 @@ class XPService {
       case 'message':
         return randomXp(XP_CONFIG.MESSAGE_XP_MIN, XP_CONFIG.MESSAGE_XP_MAX);
       case 'voice':
-        return XP_CONFIG.VOICE_XP_PER_MINUTE;
+        return XP_CONFIG.VOICE_XP_BASE; // Base XP, actual amount passed from voiceTracker
       case 'reaction_given':
         return XP_CONFIG.REACTION_GIVEN_XP;
       case 'reaction_received':

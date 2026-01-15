@@ -148,14 +148,21 @@ class VoiceTrackerService {
         const minutesSinceLastCheck = Math.floor((now - session.lastCheck) / 60000);
 
         if (minutesSinceLastCheck >= 1) {
+          // Calculate XP based on number of people in channel
+          // Formula: (members - 1) XP per minute
+          // 2 people = 1 XP, 3 people = 2 XP, 10 people = 9 XP, etc.
+          const voiceXP = Math.max(1, membersInChannel - 1) * XP_CONFIG.VOICE_XP_BASE;
+
           // Award XP for each minute
           for (let i = 0; i < minutesSinceLastCheck; i++) {
-            await xpService.awardXP(member, 'voice');
+            await xpService.awardXP(member, 'voice', voiceXP);
           }
 
           // Update session
           session.lastCheck = now;
           session.totalMinutes += minutesSinceLastCheck;
+
+          logger.debug(`Voice XP: ${member.id} earned ${voiceXP} XP (${membersInChannel} members in channel)`);
         }
       } catch (error) {
         logger.error(`Error processing voice session ${sessionKey}:`, error);

@@ -1,28 +1,30 @@
 // XP Configuration
 export const XP_CONFIG = {
   // Base XP gains
-  MESSAGE_XP_MIN: 15,
-  MESSAGE_XP_MAX: 25,
-  VOICE_XP_PER_MINUTE: 5,
-  REACTION_GIVEN_XP: 2,
-  REACTION_RECEIVED_XP: 5,
-  DAILY_CHECK_IN_XP: 100,
-  STREAK_BONUS_XP: 10,
-  INVITE_XP: 200,
-  BOOST_XP: 1000,
+  // Messages: 1-5 XP based on length
+  MESSAGE_XP_MIN: 1,
+  MESSAGE_XP_MAX: 5,
+  // Voice: 1 XP per minute per (pessoas - 1) na call
+  VOICE_XP_BASE: 1, // Base multiplied by (members - 1)
+  REACTION_GIVEN_XP: 1,
+  REACTION_RECEIVED_XP: 2,
+  DAILY_CHECK_IN_XP: 50,
+  STREAK_BONUS_XP: 5,
+  INVITE_XP: 100,
+  BOOST_XP: 500,
 
   // Cooldowns (in milliseconds)
   MESSAGE_COOLDOWN: 60 * 1000, // 60 seconds
   REACTION_COOLDOWN: 30 * 1000, // 30 seconds
   VOICE_CHECK_INTERVAL: 60 * 1000, // 1 minute
 
-  // Daily limits
+  // Daily limits (adjusted for lower XP values)
   DAILY_LIMITS: {
-    total: 1500,
-    messages: 500,
-    voice: 300,
-    reactions: 100,
-    invites: 1000,
+    total: 500,
+    messages: 200,
+    voice: 150,
+    reactions: 50,
+    invites: 500,
   },
 
   // Minimum requirements
