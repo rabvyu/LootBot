@@ -96,6 +96,17 @@ export class ConfigRepository {
   }
 
   /**
+   * Set badge notification channel (for rare+ badges)
+   */
+  async setBadgeNotificationChannel(guildId: string, channelId: string | null): Promise<ConfigDocument | null> {
+    return Config.findOneAndUpdate(
+      { guildId },
+      { badgeNotificationChannel: channelId },
+      { new: true, upsert: true }
+    );
+  }
+
+  /**
    * Start event with multiplier
    */
   async startEvent(guildId: string, multiplier: number = 2): Promise<ConfigDocument | null> {

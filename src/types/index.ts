@@ -93,6 +93,7 @@ export interface IGuildConfig {
   xpBlacklistRoles: string[];
   levelUpChannel: string | null;
   logChannel: string | null;
+  badgeNotificationChannel: string | null;
   eventMultiplier: number;
   eventActive: boolean;
   createdAt: Date;

@@ -5,7 +5,7 @@ import { configRepository } from '../database/repositories/configRepository';
 import { BadgeDocument } from '../database/models/Badge';
 import { BADGES } from '../utils/constants';
 import { daysBetween } from '../utils/helpers';
-import { createBadgeEarnedEmbed } from '../utils/embeds';
+import { createBadgeEarnedEmbed, createRareBadgeAnnouncementEmbed } from '../utils/embeds';
 import { logger } from '../utils/logger';
 import { IBadge, BadgeCategory } from '../types';
 
@@ -233,26 +233,45 @@ class BadgeService {
 
   /**
    * Send badge notification
+   * Only sends public notification for rare+ badges to the badge notification channel
    */
   private async sendBadgeNotification(member: GuildMember, badge: IBadge): Promise<void> {
     try {
       const config = await configRepository.findByGuildId(member.guild.id);
 
+      // Only send public notifications for rare, epic, and legendary badges
+      const isRarePlus = ['rare', 'epic', 'legendary'].includes(badge.rarity);
+
+      if (!isRarePlus) {
+        // For common/uncommon badges, just log it
+        logger.debug(`Badge ${badge.name} earned by ${member.id} (${badge.rarity}) - no notification`);
+        return;
+      }
+
+      // Get the badge notification channel
       let channel: TextChannel | null = null;
 
-      if (config?.levelUpChannel) {
+      if (config?.badgeNotificationChannel) {
+        channel = member.guild.channels.cache.get(config.badgeNotificationChannel) as TextChannel;
+      }
+
+      // Fallback to level up channel if badge channel not configured
+      if (!channel && config?.levelUpChannel) {
         channel = member.guild.channels.cache.get(config.levelUpChannel) as TextChannel;
       }
 
+      // Fallback to any channel with "noticias" or "news" in the name
       if (!channel) {
         channel = member.guild.channels.cache.find(
-          (ch) => ch.isTextBased() && ch.name.includes('general')
+          (ch) => ch.isTextBased() && (ch.name.includes('noticias') || ch.name.includes('news') || ch.name.includes('anuncio'))
         ) as TextChannel;
       }
 
       if (channel) {
-        const embed = createBadgeEarnedEmbed(member.user, badge);
+        // Use the special announcement embed for rare+ badges
+        const embed = createRareBadgeAnnouncementEmbed(member.user, badge);
         await channel.send({ embeds: [embed] });
+        logger.info(`Rare+ badge announcement sent for ${member.user.username}: ${badge.name} (${badge.rarity})`);
       }
     } catch (error) {
       logger.error('Error sending badge notification:', error);

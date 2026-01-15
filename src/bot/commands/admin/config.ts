@@ -37,6 +37,18 @@ export const data = new SlashCommandBuilder()
   )
   .addSubcommand((subcommand) =>
     subcommand
+      .setName('badge-channel')
+      .setDescription('Definir canal de noticias de badges raras+')
+      .addChannelOption((option) =>
+        option
+          .setName('canal')
+          .setDescription('Canal para noticias de badges (rare, epic, legendary)')
+          .addChannelTypes(ChannelType.GuildText)
+          .setRequired(false)
+      )
+  )
+  .addSubcommand((subcommand) =>
+    subcommand
       .setName('blacklist-channel')
       .setDescription('Adicionar/remover canal da blacklist de XP')
       .addChannelOption((option) =>
@@ -97,6 +109,9 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
       const logChannel = config.logChannel
         ? `<#${config.logChannel}>`
         : 'Nao definido';
+      const badgeChannel = config.badgeNotificationChannel
+        ? `<#${config.badgeNotificationChannel}>`
+        : 'Nao definido';
       const blacklistChannels = config.xpBlacklistChannels.length > 0
         ? config.xpBlacklistChannels.map((id) => `<#${id}>`).join(', ')
         : 'Nenhum';
@@ -110,6 +125,7 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
         .addFields(
           { name: 'Canal de Level Up', value: levelUpChannel, inline: true },
           { name: 'Canal de Logs', value: logChannel, inline: true },
+          { name: 'Canal de Badges', value: badgeChannel, inline: true },
           { name: 'Evento Ativo', value: config.eventActive ? `Sim (${config.eventMultiplier}x)` : 'Nao', inline: true },
           { name: 'Canais Blacklist', value: blacklistChannels, inline: false },
           { name: 'Cargos Blacklist', value: blacklistRoles, inline: false },
@@ -141,6 +157,20 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
       const message = channel
         ? `Canal de logs definido para ${channel}.`
         : 'Canal de logs desativado.';
+
+      await interaction.editReply({
+        embeds: [createSuccessEmbed('Configuracao Atualizada', message)],
+      });
+      break;
+    }
+
+    case 'badge-channel': {
+      const channel = interaction.options.getChannel('canal');
+      await configRepository.setBadgeNotificationChannel(guildId, channel?.id || null);
+
+      const message = channel
+        ? `Canal de noticias de badges definido para ${channel}.\nBadges **Rare**, **Epic** e **Legendary** serao anunciadas neste canal.`
+        : 'Canal de noticias de badges desativado.';
 
       await interaction.editReply({
         embeds: [createSuccessEmbed('Configuracao Atualizada', message)],

@@ -26,6 +26,10 @@ const ConfigSchema = new Schema<ConfigDocument>({
     type: String,
     default: null,
   },
+  badgeNotificationChannel: {
+    type: String,
+    default: null,
+  },
   eventMultiplier: {
     type: Number,
     default: 1,

@@ -149,7 +149,7 @@ export function createBadgeListEmbed(user: User, badges: IBadge[], totalBadges: 
 }
 
 /**
- * Create badge earned embed
+ * Create badge earned embed (simple version for DMs/common badges)
  */
 export function createBadgeEarnedEmbed(user: User, badge: IBadge): EmbedBuilder {
   return new EmbedBuilder()
@@ -163,6 +163,62 @@ export function createBadgeEarnedEmbed(user: User, badge: IBadge): EmbedBuilder 
     )
     .setThumbnail(user.displayAvatarURL())
     .setTimestamp();
+}
+
+/**
+ * Create special badge announcement embed for rare+ badges
+ */
+export function createRareBadgeAnnouncementEmbed(user: User, badge: IBadge): EmbedBuilder {
+  const rarityEmoji: Record<BadgeRarity, string> = {
+    common: '⚪',
+    uncommon: '🟢',
+    rare: '🔵',
+    epic: '🟣',
+    legendary: '🟠',
+  };
+
+  const rarityTitle: Record<BadgeRarity, string> = {
+    common: 'Common',
+    uncommon: 'Uncommon',
+    rare: '💎 RARE',
+    epic: '🌟 EPIC',
+    legendary: '👑 LEGENDARY',
+  };
+
+  const celebrationText: Record<BadgeRarity, string> = {
+    common: '',
+    uncommon: '',
+    rare: '**Parabens!** Uma conquista digna de nota!',
+    epic: '**Incrivel!** Uma conquista excepcional!',
+    legendary: '**LENDARIO!** Uma conquista historica para a comunidade!',
+  };
+
+  const embed = new EmbedBuilder()
+    .setColor(RARITY_COLORS[badge.rarity])
+    .setAuthor({
+      name: '🏆 BADGE CONQUISTADA!',
+      iconURL: user.displayAvatarURL(),
+    })
+    .setTitle(`${badge.icon} ${badge.name}`)
+    .setDescription(
+      `${user} conquistou uma badge **${rarityTitle[badge.rarity]}**!\n\n` +
+      `${celebrationText[badge.rarity]}`
+    )
+    .setThumbnail(user.displayAvatarURL({ size: 256 }))
+    .addFields(
+      { name: 'Badge', value: `${badge.icon} **${badge.name}**`, inline: true },
+      { name: 'Raridade', value: `${rarityEmoji[badge.rarity]} ${rarityTitle[badge.rarity]}`, inline: true },
+      { name: 'Descricao', value: badge.description, inline: false },
+    )
+    .setFooter({ text: `Use /catalogo para ver todas as badges disponiveis!` })
+    .setTimestamp();
+
+  // Add special effects for legendary badges
+  if (badge.rarity === 'legendary') {
+    embed.setImage('https://i.imgur.com/VpWMOBr.gif'); // Celebration gif (optional)
+  }
+
+  return embed;
 }
 
 /**
