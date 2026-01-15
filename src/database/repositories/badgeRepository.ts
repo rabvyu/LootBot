@@ -1,6 +1,6 @@
 import { Badge, BadgeDocument } from '../models';
 import { IBadge, BadgeCategory, BadgeRarity } from '../../types';
-import { BADGES } from '../../utils/constants';
+import { allBadges, badgeStats } from '../seeds/badges';
 import { logger } from '../../utils/logger';
 
 export class BadgeRepository {
@@ -69,73 +69,22 @@ export class BadgeRepository {
   }
 
   /**
-   * Seed initial badges from constants
+   * Seed initial badges from badge definitions (151 badges)
    */
   async seedBadges(): Promise<void> {
-    logger.info('Seeding badges...');
+    logger.info(`Seeding ${badgeStats.total} badges...`);
 
-    // Level badges
-    for (const badge of BADGES.LEVEL) {
+    // Seed all badges from the new badge definitions
+    for (const badge of allBadges) {
       await Badge.findOneAndUpdate(
-        { badgeId: badge.id },
+        { badgeId: badge.badgeId },
         {
-          badgeId: badge.id,
+          badgeId: badge.badgeId,
           name: badge.name,
           description: badge.description,
           icon: badge.icon,
-          category: 'level',
-          requirement: { type: 'level', value: badge.level },
-          rarity: badge.rarity,
-        },
-        { upsert: true }
-      );
-    }
-
-    // Time badges
-    for (const badge of BADGES.TIME) {
-      await Badge.findOneAndUpdate(
-        { badgeId: badge.id },
-        {
-          badgeId: badge.id,
-          name: badge.name,
-          description: badge.description,
-          icon: badge.icon,
-          category: 'time',
-          requirement: { type: 'days', value: badge.days },
-          rarity: badge.rarity,
-        },
-        { upsert: true }
-      );
-    }
-
-    // Achievement badges
-    for (const badge of BADGES.ACHIEVEMENT) {
-      await Badge.findOneAndUpdate(
-        { badgeId: badge.id },
-        {
-          badgeId: badge.id,
-          name: badge.name,
-          description: badge.description,
-          icon: badge.icon,
-          category: 'achievement',
+          category: badge.category,
           requirement: badge.requirement,
-          rarity: badge.rarity,
-        },
-        { upsert: true }
-      );
-    }
-
-    // Special badges
-    for (const badge of BADGES.SPECIAL) {
-      await Badge.findOneAndUpdate(
-        { badgeId: badge.id },
-        {
-          badgeId: badge.id,
-          name: badge.name,
-          description: badge.description,
-          icon: badge.icon,
-          category: 'special',
-          requirement: { type: 'manual', value: 0 },
           rarity: badge.rarity,
         },
         { upsert: true }
@@ -144,6 +93,7 @@ export class BadgeRepository {
 
     const count = await Badge.countDocuments();
     logger.info(`Badge seeding complete. Total badges: ${count}`);
+    logger.info(`By rarity: Common=${badgeStats.byRarity.common}, Uncommon=${badgeStats.byRarity.uncommon}, Rare=${badgeStats.byRarity.rare}, Epic=${badgeStats.byRarity.epic}, Legendary=${badgeStats.byRarity.legendary}`);
   }
 }
 

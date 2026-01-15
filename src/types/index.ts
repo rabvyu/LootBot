@@ -45,7 +45,19 @@ export interface IUser {
 }
 
 // Badge Types
-export type BadgeCategory = 'level' | 'time' | 'achievement' | 'special';
+export type BadgeCategory =
+  | 'level'
+  | 'time'
+  | 'achievement'
+  | 'special'
+  | 'hardware'
+  | 'overclocking'
+  | 'setup'
+  | 'peripherals'
+  | '3dprint'
+  | 'modding'
+  | 'championship';
+
 export type BadgeRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 
 export interface BadgeRequirement {

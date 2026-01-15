@@ -1,0 +1,98 @@
+/**
+ * Badges de Progressao (Niveis) - 10 badges
+ */
+
+import { BadgeDefinition } from './types';
+
+export const progressionBadges: BadgeDefinition[] = [
+  {
+    badgeId: 'level_5',
+    name: 'Iniciante',
+    description: 'Alcancou o nivel 5',
+    icon: '🌱',
+    category: 'level',
+    requirement: { type: 'level', value: 5 },
+    rarity: 'common',
+  },
+  {
+    badgeId: 'level_10',
+    name: 'Aprendiz',
+    description: 'Alcancou o nivel 10',
+    icon: '📚',
+    category: 'level',
+    requirement: { type: 'level', value: 10 },
+    rarity: 'common',
+  },
+  {
+    badgeId: 'level_15',
+    name: 'Entusiasta',
+    description: 'Alcancou o nivel 15',
+    icon: '⚡',
+    category: 'level',
+    requirement: { type: 'level', value: 15 },
+    rarity: 'uncommon',
+  },
+  {
+    badgeId: 'level_25',
+    name: 'Dedicado',
+    description: 'Alcancou o nivel 25',
+    icon: '🔥',
+    category: 'level',
+    requirement: { type: 'level', value: 25 },
+    rarity: 'uncommon',
+  },
+  {
+    badgeId: 'level_40',
+    name: 'Experiente',
+    description: 'Alcancou o nivel 40',
+    icon: '💪',
+    category: 'level',
+    requirement: { type: 'level', value: 40 },
+    rarity: 'rare',
+  },
+  {
+    badgeId: 'level_50',
+    name: 'Veterano',
+    description: 'Alcancou o nivel 50',
+    icon: '🎖️',
+    category: 'level',
+    requirement: { type: 'level', value: 50 },
+    rarity: 'rare',
+  },
+  {
+    badgeId: 'level_65',
+    name: 'Expert',
+    description: 'Alcancou o nivel 65',
+    icon: '🏅',
+    category: 'level',
+    requirement: { type: 'level', value: 65 },
+    rarity: 'epic',
+  },
+  {
+    badgeId: 'level_80',
+    name: 'Mestre',
+    description: 'Alcancou o nivel 80',
+    icon: '👑',
+    category: 'level',
+    requirement: { type: 'level', value: 80 },
+    rarity: 'epic',
+  },
+  {
+    badgeId: 'level_100',
+    name: 'Lenda',
+    description: 'Alcancou o nivel 100 - Voce e uma lenda!',
+    icon: '💎',
+    category: 'level',
+    requirement: { type: 'level', value: 100 },
+    rarity: 'legendary',
+  },
+  {
+    badgeId: 'level_150',
+    name: 'Imortal',
+    description: 'Alcancou o nivel 150 - Status imortal',
+    icon: '🌟',
+    category: 'level',
+    requirement: { type: 'level', value: 150 },
+    rarity: 'legendary',
+  },
+];
