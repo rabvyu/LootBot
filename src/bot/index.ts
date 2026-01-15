@@ -32,9 +32,13 @@ config();
 async function loadCommands() {
   // Load user commands
   const commandsPath = path.join(__dirname, 'commands');
-  const commandFiles = fs.readdirSync(commandsPath).filter((file) =>
-    (file.endsWith('.ts') || file.endsWith('.js')) && !fs.statSync(path.join(commandsPath, file)).isDirectory()
-  );
+  const commandFiles = fs.readdirSync(commandsPath).filter((file) => {
+    // Only load .js files (compiled) or .ts files (dev), but exclude .d.ts and .map files
+    const isJsFile = file.endsWith('.js') && !file.endsWith('.d.ts.map');
+    const isTsFile = file.endsWith('.ts') && !file.endsWith('.d.ts');
+    const isDirectory = fs.statSync(path.join(commandsPath, file)).isDirectory();
+    return (isJsFile || isTsFile) && !isDirectory;
+  });
 
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
@@ -48,9 +52,11 @@ async function loadCommands() {
   // Load admin commands
   const adminPath = path.join(__dirname, 'commands', 'admin');
   if (fs.existsSync(adminPath)) {
-    const adminFiles = fs.readdirSync(adminPath).filter((file) =>
-      file.endsWith('.ts') || file.endsWith('.js')
-    );
+    const adminFiles = fs.readdirSync(adminPath).filter((file) => {
+      const isJsFile = file.endsWith('.js') && !file.endsWith('.d.ts.map');
+      const isTsFile = file.endsWith('.ts') && !file.endsWith('.d.ts');
+      return isJsFile || isTsFile;
+    });
 
     for (const file of adminFiles) {
       const filePath = path.join(adminPath, file);
@@ -170,7 +176,12 @@ async function start() {
     process.on('SIGTERM', shutdown);
 
   } catch (error) {
-    logger.error('Failed to start bot:', error);
+    if (error instanceof Error) {
+      logger.error('Failed to start bot:', error.message);
+      logger.error('Stack:', error.stack);
+    } else {
+      logger.error('Failed to start bot:', String(error));
+    }
     process.exit(1);
   }
 }

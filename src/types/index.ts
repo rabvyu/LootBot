@@ -272,7 +272,10 @@ export type TransactionType =
   | 'transfer_out'
   | 'transfer_in'
   | 'lottery_win'
-  | 'admin';
+  | 'admin'
+  | 'sell'
+  | 'job'
+  | 'party_battle';
 
 export interface ITransaction {
   discordId: string;

@@ -24,3 +24,8 @@ export { Character, CharacterDocument, CharacterClass, CharacterStats, ICharacte
 export { Monster, MonsterDocument, MonsterType, MonsterDrop, IMonster } from './Monster';
 export { Clan, ClanDocument, IClan } from './Clan';
 export { ClanMember, ClanMemberDocument, ClanRole, IClanMember } from './ClanMember';
+export { TamedMonster, TamedMonsterDocument, TamedMonsterStats } from './TamedMonster';
+export { Equipment, EquipmentDocument, EquipmentSlot, EquipmentRarity, EquipmentStats } from './Equipment';
+export { Training, TrainingDocument, TrainingType } from './Training';
+export { Job, JobDocument, JobType } from './Job';
+export { Party, PartyDocument, PartyMember } from './Party';

@@ -5,6 +5,18 @@ import { userRepository } from '../database/repositories/userRepository';
 import { CharacterDocument, CharacterClass, CharacterStats } from '../database/models/Character';
 import { MonsterDocument, MonsterType } from '../database/models/Monster';
 import { logger } from '../utils/logger';
+import {
+  ALL_MONSTERS,
+  LOCATIONS,
+  getMonstersByLocation,
+  getLocationById,
+  getLocationsForLevel,
+  getRandomMonsterForLevel,
+  getRandomMonsterFromLocation,
+  MONSTER_STATS,
+  MonsterData,
+  LocationData,
+} from '../data/monsters';
 
 // Base stats by class
 const CLASS_BASE_STATS: Record<CharacterClass, CharacterStats> = {
@@ -39,18 +51,6 @@ const LEVEL_UP_STATS: Record<CharacterClass, Partial<CharacterStats>> = {
 // XP required for character level
 const XP_FOR_LEVEL = (level: number) => Math.floor(50 * Math.pow(level, 1.5));
 
-// Default monsters
-const DEFAULT_MONSTERS = [
-  { id: 'slime', name: 'Slime', emoji: '🟢', description: 'Um slime gelatinoso.', type: 'normal' as MonsterType, level: 1, hp: 30, attack: 5, defense: 2, xpReward: 15, coinsReward: { min: 10, max: 25 }, drops: [{ resourceId: 'essence', chance: 10, minAmount: 1, maxAmount: 1 }] },
-  { id: 'goblin', name: 'Goblin', emoji: '👺', description: 'Um goblin traicoeiro.', type: 'normal' as MonsterType, level: 2, hp: 50, attack: 10, defense: 5, xpReward: 30, coinsReward: { min: 20, max: 40 }, drops: [{ resourceId: 'iron', chance: 20, minAmount: 1, maxAmount: 2 }] },
-  { id: 'wolf', name: 'Lobo Selvagem', emoji: '🐺', description: 'Um lobo feroz.', type: 'normal' as MonsterType, level: 3, hp: 70, attack: 15, defense: 8, xpReward: 50, coinsReward: { min: 30, max: 60 }, drops: [{ resourceId: 'wood', chance: 30, minAmount: 2, maxAmount: 5 }] },
-  { id: 'skeleton', name: 'Esqueleto', emoji: '💀', description: 'Um esqueleto animado.', type: 'normal' as MonsterType, level: 5, hp: 100, attack: 20, defense: 10, xpReward: 80, coinsReward: { min: 50, max: 100 }, drops: [{ resourceId: 'stone', chance: 40, minAmount: 2, maxAmount: 6 }] },
-  { id: 'orc', name: 'Orc Guerreiro', emoji: '👹', description: 'Um orc brutal.', type: 'elite' as MonsterType, level: 8, hp: 180, attack: 30, defense: 15, xpReward: 150, coinsReward: { min: 100, max: 200 }, drops: [{ resourceId: 'iron', chance: 50, minAmount: 3, maxAmount: 8 }, { resourceId: 'gold', chance: 20, minAmount: 1, maxAmount: 2 }] },
-  { id: 'vampire', name: 'Vampiro', emoji: '🧛', description: 'Um vampiro sedento.', type: 'elite' as MonsterType, level: 12, hp: 250, attack: 40, defense: 20, xpReward: 250, coinsReward: { min: 200, max: 400 }, drops: [{ resourceId: 'essence', chance: 60, minAmount: 3, maxAmount: 8 }, { resourceId: 'diamond', chance: 15, minAmount: 1, maxAmount: 2 }] },
-  { id: 'dragon_young', name: 'Dragao Jovem', emoji: '🐲', description: 'Um dragao ainda jovem.', type: 'boss' as MonsterType, level: 15, hp: 500, attack: 50, defense: 30, xpReward: 500, coinsReward: { min: 500, max: 1000 }, drops: [{ resourceId: 'diamond', chance: 50, minAmount: 2, maxAmount: 5 }, { resourceId: 'essence', chance: 80, minAmount: 5, maxAmount: 15 }], isBoss: true },
-  { id: 'lich', name: 'Lich', emoji: '☠️', description: 'Um mago morto-vivo poderoso.', type: 'boss' as MonsterType, level: 25, hp: 800, attack: 70, defense: 40, xpReward: 1000, coinsReward: { min: 1000, max: 2500 }, drops: [{ resourceId: 'essence', chance: 100, minAmount: 10, maxAmount: 30 }, { resourceId: 'diamond', chance: 70, minAmount: 3, maxAmount: 8 }], isBoss: true },
-];
-
 export interface BattleResult {
   victory: boolean;
   rounds: string[];
@@ -62,6 +62,10 @@ export interface BattleResult {
   characterDied: boolean;
   monsterName: string;
   monsterEmoji: string;
+  monsterId?: string;
+  monsterHpRemaining?: number;
+  monsterMaxHp?: number;
+  isBoss?: boolean;
 }
 
 export interface CreateCharacterResult {
@@ -72,14 +76,18 @@ export interface CreateCharacterResult {
 
 class RPGService {
   async initialize(): Promise<void> {
-    for (const monster of DEFAULT_MONSTERS) {
+    let created = 0;
+    for (const monster of ALL_MONSTERS) {
       const existing = await rpgRepository.getMonster(monster.id);
       if (!existing) {
         await rpgRepository.createMonster(monster);
-        logger.info(`Created monster: ${monster.name}`);
+        created++;
       }
     }
-    logger.info('RPG system initialized');
+    if (created > 0) {
+      logger.info(`Created ${created} new monsters`);
+    }
+    logger.info(`RPG system initialized with ${MONSTER_STATS.total} monsters in ${MONSTER_STATS.totalLocations} locations`);
   }
 
   getClassBaseStats(characterClass: CharacterClass): CharacterStats {
@@ -315,6 +323,118 @@ class RPGService {
 
   private randomBetween(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  // Location methods
+  getAllLocations(): LocationData[] {
+    return LOCATIONS;
+  }
+
+  getLocation(locationId: string): LocationData | undefined {
+    return getLocationById(locationId);
+  }
+
+  getLocationsForCharacterLevel(level: number): LocationData[] {
+    return getLocationsForLevel(level);
+  }
+
+  getLocationsByTier(tier: number): LocationData[] {
+    return LOCATIONS.filter(l => l.tier === tier);
+  }
+
+  getMonstersInLocation(locationId: string): MonsterData[] {
+    return getMonstersByLocation(locationId);
+  }
+
+  getRandomMonster(playerLevel: number, locationId?: string): MonsterData | undefined {
+    if (locationId) {
+      return getRandomMonsterFromLocation(locationId, playerLevel);
+    }
+    return getRandomMonsterForLevel(playerLevel);
+  }
+
+  // Battle with location
+  async battleInLocation(discordId: string, locationId: string): Promise<BattleResult | { error: string }> {
+    const character = await rpgRepository.getCharacter(discordId);
+    if (!character) {
+      return { error: 'Voce nao tem um personagem! Use `/rpg criar` primeiro.' };
+    }
+
+    if (character.stats.hp <= 0) {
+      return { error: 'Seu personagem esta morto! Use `/rpg curar` primeiro.' };
+    }
+
+    const location = getLocationById(locationId);
+    if (!location) {
+      return { error: 'Localizacao nao encontrada.' };
+    }
+
+    // Check if character level is appropriate
+    if (character.level < location.minLevel - 5) {
+      return { error: `Voce precisa ser pelo menos nivel ${location.minLevel - 5} para explorar ${location.name}.` };
+    }
+
+    const monsterData = getRandomMonsterFromLocation(locationId, character.level);
+    if (!monsterData) {
+      return { error: 'Nenhum monstro encontrado nesta localizacao.' };
+    }
+
+    // Ensure monster exists in DB
+    let monster = await rpgRepository.getMonster(monsterData.id);
+    if (!monster) {
+      await rpgRepository.createMonster(monsterData);
+      monster = await rpgRepository.getMonster(monsterData.id);
+    }
+
+    if (!monster) {
+      return { error: 'Erro ao carregar monstro.' };
+    }
+
+    return this.executeBattle(discordId, character, monster);
+  }
+
+  private async executeBattle(
+    discordId: string,
+    character: CharacterDocument,
+    monster: MonsterDocument
+  ): Promise<BattleResult> {
+    const result = this.simulateBattle(character, monster);
+
+    // Add monster data for capture
+    result.monsterId = monster.id || monster._id.toString();
+    result.monsterMaxHp = monster.hp;
+    result.monsterHpRemaining = result.victory ? 0 : Math.max(0, monster.hp - result.damageDealt);
+    result.isBoss = monster.isBoss;
+
+    if (result.victory) {
+      await rpgRepository.recordBattleWin(discordId, result.damageDealt);
+      await rpgRepository.addExperience(discordId, result.xpEarned);
+      await economyRepository.addCoins(discordId, result.coinsEarned, 'earn', `Batalha: ${monster.name}`);
+      await userRepository.addXP(discordId, Math.floor(result.xpEarned / 2), 'bonus');
+
+      for (const drop of result.drops) {
+        await resourceRepository.addResource(discordId, drop.resourceId, drop.amount);
+      }
+
+      await this.checkLevelUp(discordId);
+
+      if (monster.isBoss) {
+        await rpgRepository.recordBossKill(discordId);
+      }
+    } else {
+      await rpgRepository.recordBattleLoss(discordId);
+    }
+
+    if (result.damageTaken > 0) {
+      await rpgRepository.damageCharacter(discordId, result.damageTaken);
+    }
+
+    return result;
+  }
+
+  // Stats
+  getMonsterStats() {
+    return MONSTER_STATS;
   }
 }
 
