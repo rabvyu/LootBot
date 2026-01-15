@@ -1,0 +1,42 @@
+{
+  "name": "discord-gamification-bot",
+  "version": "1.0.0",
+  "description": "Bot Discord de gamificacao com sistema de XP, niveis, badges e integracao com site",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node-dev --respawn src/index.ts",
+    "register-commands": "ts-node src/bot/registerCommands.ts"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "gamification",
+    "xp",
+    "levels",
+    "badges"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "mongoose": "^8.0.3",
+    "express": "^4.18.2",
+    "dotenv": "^16.3.1",
+    "cors": "^2.8.5",
+    "express-rate-limit": "^7.1.5",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/uuid": "^9.0.7",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0"
+  }
+}
