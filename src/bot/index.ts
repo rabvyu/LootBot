@@ -10,6 +10,11 @@ import { missionService } from '../services/missionService';
 import { economyService } from '../services/economyService';
 import { voiceTrackerService } from '../services/voiceTracker';
 import { titleService } from '../services/titleService';
+import { petService } from '../services/petService';
+import { expeditionService } from '../services/expeditionService';
+import { resourceService } from '../services/resourceService';
+import { craftingService } from '../services/craftingService';
+import { rpgService } from '../services/rpgService';
 import { logger } from '../utils/logger';
 
 // Import event handlers
@@ -130,6 +135,21 @@ async function start() {
 
     // Initialize titles
     await titleService.initialize();
+
+    // Initialize pets
+    await petService.initialize();
+
+    // Initialize expeditions
+    await expeditionService.initialize();
+
+    // Initialize resources
+    await resourceService.initialize();
+
+    // Initialize crafting
+    await craftingService.initialize();
+
+    // Initialize RPG
+    await rpgService.initialize();
 
     // Load commands
     await loadCommands();
