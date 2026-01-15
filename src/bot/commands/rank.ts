@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { userRepository } from '../../database/repositories/userRepository';
 import { levelService } from '../../services/levelService';
+import { badgeService } from '../../services/badgeService';
 import { createRankEmbed, createErrorEmbed } from '../../utils/embeds';
 
 export const data = new SlashCommandBuilder()
@@ -41,8 +42,11 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const xpNeeded = levelService.getXPNeeded(userData.totalXP, userData.level);
   const progress = levelService.getProgress(userData.totalXP, userData.level);
 
+  // Get user badges with full info for rarity display
+  const badges = await badgeService.getUserBadges(targetUser.id);
+
   // Create and send embed
-  const embed = createRankEmbed(targetUser, userData, rank, xpNeeded, progress);
+  const embed = createRankEmbed(targetUser, userData, rank, xpNeeded, progress, badges);
 
   await interaction.editReply({ embeds: [embed] });
 }

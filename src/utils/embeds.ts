@@ -3,10 +3,54 @@ import { COLORS, RARITY_COLORS } from './constants';
 import { createProgressBar, formatNumber, formatDuration, getOrdinal } from './helpers';
 import { IUser, IBadge, LeaderboardEntry, BadgeRarity } from '../types';
 
+// Rarity symbols for badge display
+const RARITY_SYMBOLS: Record<BadgeRarity, string> = {
+  common: '⚪',
+  uncommon: '🟢',
+  rare: '🔵',
+  epic: '🟣',
+  legendary: '🟠',
+};
+
+/**
+ * Format badges count by rarity with symbols
+ * Example: "3 (🟠1 🟣1 🔵1)" or "1 (🟠1)"
+ */
+function formatBadgeCountByRarity(badges: IBadge[]): string {
+  if (badges.length === 0) return '0';
+
+  // Count badges by rarity
+  const counts: Record<BadgeRarity, number> = {
+    legendary: 0,
+    epic: 0,
+    rare: 0,
+    uncommon: 0,
+    common: 0,
+  };
+
+  for (const badge of badges) {
+    counts[badge.rarity]++;
+  }
+
+  // Build rarity display string (only show rarities that have badges)
+  const rarityOrder: BadgeRarity[] = ['legendary', 'epic', 'rare', 'uncommon', 'common'];
+  const rarityParts: string[] = [];
+
+  for (const rarity of rarityOrder) {
+    if (counts[rarity] > 0) {
+      rarityParts.push(`${RARITY_SYMBOLS[rarity]}${counts[rarity]}`);
+    }
+  }
+
+  return `${badges.length} (${rarityParts.join(' ')})`;
+}
+
 /**
  * Create rank card embed
  */
-export function createRankEmbed(user: User, userData: IUser, rank: number, xpNeeded: number, progress: number): EmbedBuilder {
+export function createRankEmbed(user: User, userData: IUser, rank: number, xpNeeded: number, progress: number, badges: IBadge[] = []): EmbedBuilder {
+  const badgeDisplay = badges.length > 0 ? formatBadgeCountByRarity(badges) : `${userData.badges.length}`;
+
   return new EmbedBuilder()
     .setColor(COLORS.XP)
     .setAuthor({
@@ -20,7 +64,7 @@ export function createRankEmbed(user: User, userData: IUser, rank: number, xpNee
       { name: 'XP Total', value: formatNumber(userData.totalXP), inline: true },
       { name: 'Progresso', value: `${createProgressBar(progress)} ${progress.toFixed(1)}%`, inline: false },
       { name: 'XP para proximo nivel', value: formatNumber(xpNeeded), inline: true },
-      { name: 'Badges', value: `${userData.badges.length}`, inline: true },
+      { name: 'Badges', value: badgeDisplay, inline: true },
     )
     .setFooter({ text: 'Continue interagindo para ganhar XP!' })
     .setTimestamp();
@@ -38,6 +82,7 @@ export function createProfileEmbed(
   progress: number
 ): EmbedBuilder {
   const badgeIcons = badges.map(b => b.icon).join(' ') || 'Nenhuma';
+  const badgeCountDisplay = formatBadgeCountByRarity(badges);
 
   return new EmbedBuilder()
     .setColor(COLORS.PRIMARY)
@@ -51,7 +96,7 @@ export function createProfileEmbed(
       { name: 'XP Total', value: formatNumber(userData.totalXP), inline: true },
       { name: 'Progresso', value: `${progress.toFixed(1)}%`, inline: true },
       { name: 'XP para Level Up', value: formatNumber(xpNeeded), inline: true },
-      { name: `Badges (${badges.length})`, value: badgeIcons, inline: false },
+      { name: `Badges ${badgeCountDisplay}`, value: badgeIcons, inline: false },
       { name: 'Estatisticas', value: [
         `Mensagens: ${formatNumber(userData.stats.messagesCount)}`,
         `Tempo em Voz: ${formatDuration(userData.stats.voiceMinutes)}`,
