@@ -2,6 +2,7 @@ import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { userRepository } from '../../database/repositories/userRepository';
 import { badgeService } from '../../services/badgeService';
 import { levelService } from '../../services/levelService';
+import { titleService } from '../../services/titleService';
 import { createProfileEmbed, createErrorEmbed } from '../../utils/embeds';
 
 export const data = new SlashCommandBuilder()
@@ -35,6 +36,15 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     targetUser.avatar
   );
 
+  // Check for private profile
+  const isOwnProfile = targetUser.id === interaction.user.id;
+  if (userData.profileSettings?.privateProfile && !isOwnProfile) {
+    await interaction.editReply({
+      embeds: [createErrorEmbed('Perfil Privado', 'Este usuario configurou seu perfil como privado.')],
+    });
+    return;
+  }
+
   // Get rank
   const rank = await userRepository.getRank(targetUser.id);
 
@@ -45,8 +55,11 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
   const xpNeeded = levelService.getXPNeeded(userData.totalXP, userData.level);
   const progress = levelService.getProgress(userData.totalXP, userData.level);
 
+  // Get equipped title
+  const equippedTitle = await titleService.getEquippedTitleDisplay(targetUser.id);
+
   // Create and send embed
-  const embed = createProfileEmbed(targetUser, userData, rank, badges, xpNeeded, progress);
+  const embed = createProfileEmbed(targetUser, userData, rank, badges, xpNeeded, progress, equippedTitle);
 
   await interaction.editReply({ embeds: [embed] });
 }

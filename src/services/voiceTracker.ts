@@ -5,6 +5,7 @@ import { logger } from '../utils/logger';
 import { xpService } from './xpService';
 import { antiExploitService } from './antiExploit';
 import { badgeService } from './badgeService';
+import { missionService } from './missionService';
 import { VoiceSession } from '../types';
 
 class VoiceTrackerService {
@@ -101,6 +102,13 @@ class VoiceTrackerService {
     if (finalMinutes > 0) {
       await userRepository.incrementStat(member.id, 'voiceMinutes', finalMinutes);
       logger.debug(`Voice session ended: ${member.id}, total minutes: ${finalMinutes}`);
+
+      // Track mission progress for voice minutes
+      try {
+        await missionService.trackVoiceMinutes(member.id, finalMinutes);
+      } catch (error) {
+        logger.error('Error tracking voice mission:', error);
+      }
 
       // Check for voice-related badges if session was at least 10 minutes
       if (finalMinutes >= 10) {

@@ -6,7 +6,10 @@ import fs from 'fs';
 import { client } from './client';
 import { connectDatabase } from '../database/connection';
 import { badgeService } from '../services/badgeService';
+import { missionService } from '../services/missionService';
+import { economyService } from '../services/economyService';
 import { voiceTrackerService } from '../services/voiceTracker';
+import { titleService } from '../services/titleService';
 import { logger } from '../utils/logger';
 
 // Import event handlers
@@ -118,6 +121,15 @@ async function start() {
 
     // Initialize badges
     await badgeService.initializeBadges();
+
+    // Initialize missions
+    await missionService.initialize();
+
+    // Initialize shop
+    await economyService.initializeShop();
+
+    // Initialize titles
+    await titleService.initialize();
 
     // Load commands
     await loadCommands();

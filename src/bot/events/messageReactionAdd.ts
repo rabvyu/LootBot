@@ -3,6 +3,7 @@ import { xpService } from '../../services/xpService';
 import { antiExploitService } from '../../services/antiExploit';
 import { userRepository } from '../../database/repositories/userRepository';
 import { badgeService } from '../../services/badgeService';
+import { missionService } from '../../services/missionService';
 import { logger } from '../../utils/logger';
 
 export async function handleMessageReactionAdd(
@@ -56,6 +57,9 @@ export async function handleMessageReactionAdd(
       // Award XP to the person who reacted
       await xpService.awardXP(reactingMember, 'reaction_given');
       await userRepository.incrementStat(user.id, 'reactionsGiven', 1);
+
+      // Track mission progress for giving reactions
+      await missionService.trackReactionGiven(user.id);
     }
 
     // Award XP to message author for receiving reaction (if different from reactor)
@@ -64,6 +68,9 @@ export async function handleMessageReactionAdd(
       if (messageAuthorMember) {
         await xpService.awardXP(messageAuthorMember, 'reaction_received');
         await userRepository.incrementStat(messageAuthorId, 'reactionsReceived', 1);
+
+        // Track mission progress for receiving reactions
+        await missionService.trackReactionReceived(messageAuthorId);
       }
     }
 

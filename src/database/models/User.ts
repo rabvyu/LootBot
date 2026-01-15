@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { IUser, UserStats, DailyXP, UserBadge } from '../../types';
+import { IUser, UserStats, DailyXP, UserBadge, ProfileSettings } from '../../types';
 
 export interface UserDocument extends Omit<IUser, '_id'>, Document {}
 
@@ -28,6 +28,15 @@ const DailyXPSchema = new Schema<DailyXP>({
   invites: { type: Number, default: 0 },
   bonus: { type: Number, default: 0 },
   total: { type: Number, default: 0 },
+}, { _id: false });
+
+const ProfileSettingsSchema = new Schema<ProfileSettings>({
+  showStats: { type: Boolean, default: true },
+  showBadges: { type: Boolean, default: true },
+  showStreak: { type: Boolean, default: true },
+  showCoins: { type: Boolean, default: true },
+  showRank: { type: Boolean, default: true },
+  privateProfile: { type: Boolean, default: false },
 }, { _id: false });
 
 const UserSchema = new Schema<UserDocument>({
@@ -64,6 +73,10 @@ const UserSchema = new Schema<UserDocument>({
     default: 0,
     index: true,
   },
+  coins: {
+    type: Number,
+    default: 0,
+  },
   badges: {
     type: [UserBadgeSchema],
     default: [],
@@ -74,6 +87,20 @@ const UserSchema = new Schema<UserDocument>({
   },
   dailyXP: {
     type: DailyXPSchema,
+    default: () => ({}),
+  },
+  // Profile customization
+  profileColor: {
+    type: String,
+    default: null,
+  },
+  profileBio: {
+    type: String,
+    default: null,
+    maxLength: 200,
+  },
+  profileSettings: {
+    type: ProfileSettingsSchema,
     default: () => ({}),
   },
   joinedAt: {

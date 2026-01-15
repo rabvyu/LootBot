@@ -28,6 +28,15 @@ export interface UserBadge {
   earnedAt: Date;
 }
 
+export interface ProfileSettings {
+  showStats: boolean;
+  showBadges: boolean;
+  showStreak: boolean;
+  showCoins: boolean;
+  showRank: boolean;
+  privateProfile: boolean;
+}
+
 export interface IUser {
   discordId: string;
   username: string;
@@ -36,9 +45,13 @@ export interface IUser {
   xp: number;
   level: number;
   totalXP: number;
+  coins: number;
   badges: UserBadge[];
   stats: UserStats;
   dailyXP: DailyXP;
+  profileColor: string | null;
+  profileBio: string | null;
+  profileSettings: ProfileSettings;
   joinedAt: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -177,3 +190,170 @@ export interface Command {
 
 // Leaderboard Period
 export type LeaderboardPeriod = 'daily' | 'weekly' | 'monthly' | 'alltime';
+
+// Level Role Types
+export interface ILevelRole {
+  guildId: string;
+  roleId: string;
+  requiredLevel: number;
+  removeOnHigher: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Mission Types
+export type MissionType =
+  | 'send_messages'
+  | 'voice_minutes'
+  | 'give_reactions'
+  | 'receive_reactions'
+  | 'reply_messages'
+  | 'use_command'
+  | 'collect_daily'
+  | 'reach_leaderboard';
+
+export type MissionPeriod = 'daily' | 'weekly' | 'achievement';
+
+export interface IMission {
+  id: string;
+  name: string;
+  description: string;
+  type: MissionType;
+  period: MissionPeriod;
+  target: number;
+  xpReward: number;
+  coinsReward: number;
+  active: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IUserMission {
+  discordId: string;
+  missionId: string;
+  progress: number;
+  completed: boolean;
+  completedAt: Date | null;
+  assignedAt: Date;
+  expiresAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Economy Types
+export type ShopItemType =
+  | 'role_temp'
+  | 'xp_booster'
+  | 'title'
+  | 'badge'
+  | 'lottery_ticket'
+  | 'profile_color';
+
+export interface IShopItem {
+  id: string;
+  name: string;
+  description: string;
+  type: ShopItemType;
+  price: number;
+  stock: number | null;
+  roleId: string | null;
+  duration: number | null;
+  multiplier: number | null;
+  badgeId: string | null;
+  color: string | null;
+  active: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type TransactionType =
+  | 'earn'
+  | 'spend'
+  | 'transfer_out'
+  | 'transfer_in'
+  | 'lottery_win'
+  | 'admin';
+
+export interface ITransaction {
+  discordId: string;
+  type: TransactionType;
+  amount: number;
+  balance: number;
+  description: string;
+  relatedUserId: string | null;
+  relatedItemId: string | null;
+  createdAt: Date;
+}
+
+// Event Types
+export type EventType =
+  | 'xp_boost'
+  | 'coins_boost'
+  | 'double_daily'
+  | 'badge_hunt'
+  | 'community_goal'
+  | 'seasonal';
+
+export interface IEvent {
+  id: string;
+  name: string;
+  description: string;
+  type: EventType;
+  active: boolean;
+  startDate: Date;
+  endDate: Date;
+  multiplier?: number;
+  badgeId?: string;
+  goalType?: 'messages' | 'voice_minutes' | 'reactions' | 'total_xp';
+  goalTarget?: number;
+  goalProgress?: number;
+  goalReward?: {
+    xp?: number;
+    coins?: number;
+    badgeId?: string;
+  };
+  seasonalTheme?: string;
+  participants?: string[];
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IEventParticipation {
+  eventId: string;
+  discordId: string;
+  contribution: number;
+  xpEarned: number;
+  coinsEarned: number;
+  rewardsClaimed: boolean;
+  joinedAt: Date;
+  lastContribution: Date;
+}
+
+// Title Types
+export type TitleSource = 'shop' | 'event' | 'achievement' | 'admin' | 'level';
+export type TitleRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+
+export interface ITitle {
+  id: string;
+  name: string;
+  displayName: string;
+  description: string;
+  source: TitleSource;
+  requiredLevel?: number;
+  requiredBadgeId?: string;
+  price?: number;
+  color?: string;
+  rarity: TitleRarity;
+  active: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IUserTitle {
+  discordId: string;
+  titleId: string;
+  equipped: boolean;
+  earnedAt: Date;
+  expiresAt?: Date | null;
+}

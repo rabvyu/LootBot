@@ -1,5 +1,5 @@
 import { User, UserDocument } from '../models';
-import { IUser, UserBadge, LeaderboardPeriod } from '../../types';
+import { IUser, UserBadge, LeaderboardPeriod, ProfileSettings } from '../../types';
 import { startOfDay, startOfWeek, startOfMonth, isToday, levelFromXp } from '../../utils/helpers';
 
 export class UserRepository {
@@ -397,6 +397,51 @@ export class UserRepository {
    */
   async getUsersByMinLevel(minLevel: number): Promise<UserDocument[]> {
     return User.find({ level: { $gte: minLevel } });
+  }
+
+  /**
+   * Get all users (for syncing roles, badges, etc.)
+   */
+  async getAllUsers(): Promise<UserDocument[]> {
+    return User.find();
+  }
+
+  /**
+   * Update user profile settings
+   */
+  async updateProfile(
+    discordId: string,
+    updates: {
+      profileColor?: string | null;
+      profileBio?: string | null;
+      profileSettings?: ProfileSettings;
+    }
+  ): Promise<UserDocument | null> {
+    const updateObj: Record<string, unknown> = {};
+
+    if (updates.profileColor !== undefined) {
+      updateObj.profileColor = updates.profileColor;
+    }
+    if (updates.profileBio !== undefined) {
+      updateObj.profileBio = updates.profileBio;
+    }
+    if (updates.profileSettings !== undefined) {
+      updateObj.profileSettings = updates.profileSettings;
+    }
+
+    return User.findOneAndUpdate(
+      { discordId },
+      { $set: updateObj },
+      { new: true }
+    );
+  }
+
+  /**
+   * Get user's profile settings
+   */
+  async getProfileSettings(discordId: string): Promise<ProfileSettings | null> {
+    const user = await User.findOne({ discordId });
+    return user?.profileSettings || null;
   }
 }
 

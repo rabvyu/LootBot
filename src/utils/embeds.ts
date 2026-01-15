@@ -1,4 +1,4 @@
-import { EmbedBuilder, User } from 'discord.js';
+import { EmbedBuilder, User, Role } from 'discord.js';
 import { COLORS, RARITY_COLORS } from './constants';
 import { createProgressBar, formatNumber, formatDuration, getOrdinal } from './helpers';
 import { IUser, IBadge, LeaderboardEntry, BadgeRarity } from '../types';
@@ -79,37 +79,100 @@ export function createProfileEmbed(
   rank: number,
   badges: IBadge[],
   xpNeeded: number,
-  progress: number
+  progress: number,
+  equippedTitle: string | null = null
 ): EmbedBuilder {
-  const badgeIcons = badges.map(b => b.icon).join(' ') || 'Nenhuma';
-  const badgeCountDisplay = formatBadgeCountByRarity(badges);
+  const settings = userData.profileSettings || {
+    showStats: true,
+    showBadges: true,
+    showStreak: true,
+    showCoins: true,
+    showRank: true,
+    privateProfile: false,
+  };
 
-  return new EmbedBuilder()
-    .setColor(COLORS.PRIMARY)
+  // Determine embed color
+  const embedColor = userData.profileColor
+    ? parseInt(userData.profileColor.replace('#', ''), 16)
+    : COLORS.PRIMARY;
+
+  // Build description
+  let description = '';
+
+  // Add title if equipped
+  if (equippedTitle) {
+    description += `${equippedTitle}\n\n`;
+  }
+
+  // Add bio if exists
+  if (userData.profileBio) {
+    description += `*"${userData.profileBio}"*\n\n`;
+  }
+
+  // Add rank and level
+  if (settings.showRank) {
+    description += `**Rank:** #${rank} | **Level:** ${userData.level}`;
+  } else {
+    description += `**Level:** ${userData.level}`;
+  }
+
+  const embed = new EmbedBuilder()
+    .setColor(embedColor)
     .setAuthor({
       name: `Perfil de ${user.globalName || user.username}`,
       iconURL: user.displayAvatarURL(),
     })
     .setThumbnail(user.displayAvatarURL({ size: 256 }))
-    .setDescription(`**Rank:** #${rank} | **Level:** ${userData.level}`)
+    .setDescription(description)
     .addFields(
       { name: 'XP Total', value: formatNumber(userData.totalXP), inline: true },
       { name: 'Progresso', value: `${progress.toFixed(1)}%`, inline: true },
       { name: 'XP para Level Up', value: formatNumber(xpNeeded), inline: true },
-      { name: `Badges ${badgeCountDisplay}`, value: badgeIcons, inline: false },
-      { name: 'Estatisticas', value: [
+    );
+
+  // Add coins if visible
+  if (settings.showCoins) {
+    embed.addFields({ name: 'Moedas', value: `${formatNumber(userData.coins)} 🪙`, inline: true });
+  }
+
+  // Add badges if visible
+  if (settings.showBadges) {
+    const badgeIcons = badges.map(b => b.icon).join(' ') || 'Nenhuma';
+    const badgeCountDisplay = formatBadgeCountByRarity(badges);
+    embed.addFields({ name: `Badges ${badgeCountDisplay}`, value: badgeIcons, inline: false });
+  }
+
+  // Add stats if visible
+  if (settings.showStats) {
+    embed.addFields({
+      name: 'Estatisticas',
+      value: [
         `Mensagens: ${formatNumber(userData.stats.messagesCount)}`,
         `Tempo em Voz: ${formatDuration(userData.stats.voiceMinutes)}`,
         `Reacoes Dadas: ${formatNumber(userData.stats.reactionsGiven)}`,
         `Reacoes Recebidas: ${formatNumber(userData.stats.reactionsReceived)}`,
-      ].join('\n'), inline: true },
-      { name: 'Streaks', value: [
+      ].join('\n'),
+      inline: true,
+    });
+  }
+
+  // Add streaks if visible
+  if (settings.showStreak) {
+    embed.addFields({
+      name: 'Streaks',
+      value: [
         `Streak Atual: ${userData.stats.currentStreak} dias`,
         `Maior Streak: ${userData.stats.longestStreak} dias`,
-      ].join('\n'), inline: true },
-    )
+      ].join('\n'),
+      inline: true,
+    });
+  }
+
+  embed
     .setFooter({ text: `Membro desde ${userData.joinedAt.toLocaleDateString('pt-BR')}` })
     .setTimestamp();
+
+  return embed;
 }
 
 /**
@@ -140,7 +203,13 @@ export function createLeaderboardEmbed(entries: LeaderboardEntry[], period: stri
 /**
  * Create level up embed
  */
-export function createLevelUpEmbed(user: User, oldLevel: number, newLevel: number, newBadges: IBadge[]): EmbedBuilder {
+export function createLevelUpEmbed(
+  user: User,
+  oldLevel: number,
+  newLevel: number,
+  newBadges: IBadge[],
+  newRole: Role | null = null
+): EmbedBuilder {
   const embed = new EmbedBuilder()
     .setColor(COLORS.LEVEL_UP)
     .setTitle('🎉 Level Up!')
@@ -151,6 +220,14 @@ export function createLevelUpEmbed(user: User, oldLevel: number, newLevel: numbe
       { name: 'Novo Nivel', value: `${newLevel}`, inline: true },
     )
     .setTimestamp();
+
+  if (newRole) {
+    embed.addFields({
+      name: '🎖️ Novo Cargo Desbloqueado!',
+      value: `${newRole}`,
+      inline: false,
+    });
+  }
 
   if (newBadges.length > 0) {
     embed.addFields({
@@ -269,7 +346,7 @@ export function createRareBadgeAnnouncementEmbed(user: User, badge: IBadge): Emb
 /**
  * Create daily reward embed
  */
-export function createDailyEmbed(user: User, xpGained: number, streak: number, bonus: number): EmbedBuilder {
+export function createDailyEmbed(user: User, xpGained: number, streak: number, bonus: number, coins: number = 0): EmbedBuilder {
   const embed = new EmbedBuilder()
     .setColor(COLORS.SUCCESS)
     .setTitle('📅 Recompensa Diaria!')
@@ -277,12 +354,13 @@ export function createDailyEmbed(user: User, xpGained: number, streak: number, b
     .setThumbnail(user.displayAvatarURL())
     .addFields(
       { name: 'XP Ganho', value: `+${formatNumber(xpGained)} XP`, inline: true },
+      { name: 'Moedas', value: `+${formatNumber(coins)} 🪙`, inline: true },
       { name: 'Streak', value: `🔥 ${streak} dias`, inline: true },
     )
     .setTimestamp();
 
   if (bonus > 0) {
-    embed.addFields({ name: 'Bonus de Streak', value: `+${formatNumber(bonus)} XP`, inline: true });
+    embed.addFields({ name: 'Bonus de Streak (XP)', value: `+${formatNumber(bonus)} XP`, inline: true });
   }
 
   return embed;

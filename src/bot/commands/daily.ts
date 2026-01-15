@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction, GuildMember } from 'discord.js';
 import { xpService } from '../../services/xpService';
 import { badgeService } from '../../services/badgeService';
+import { missionService } from '../../services/missionService';
 import { createDailyEmbed, createErrorEmbed } from '../../utils/embeds';
 import { logger } from '../../utils/logger';
 
@@ -34,10 +35,18 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     interaction.user,
     result.xpGained,
     result.newStreak,
-    result.streakBonus
+    result.streakBonus,
+    result.coinsGained
   );
 
   await interaction.editReply({ embeds: [embed] });
+
+  // Track mission progress for collecting daily
+  try {
+    await missionService.trackDailyCollected(interaction.user.id);
+  } catch (error) {
+    logger.error('Error tracking daily mission:', error);
+  }
 
   // Check for badges after daily claim (time badges, streak badges, etc)
   try {

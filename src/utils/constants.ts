@@ -135,6 +135,8 @@ export const COLORS = {
   XP: 0xFFD700, // Gold
   LEVEL_UP: 0x00FF00, // Bright Green
   BADGE: 0x9B59B6, // Purple
+  ECONOMY: 0xF1C40F, // Gold/Yellow for economy
+  EVENT: 0xE91E63, // Pink for events
 };
 
 // Rarity colors

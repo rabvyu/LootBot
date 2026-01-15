@@ -1,10 +1,12 @@
-import { GuildMember, TextChannel } from 'discord.js';
+import { GuildMember, TextChannel, Role } from 'discord.js';
 import { userRepository } from '../database/repositories/userRepository';
 import { configRepository } from '../database/repositories/configRepository';
 import { xpForLevel, totalXpForLevel, levelFromXp, progressToNextLevel, xpNeededForNextLevel } from '../utils/helpers';
 import { createLevelUpEmbed } from '../utils/embeds';
 import { logger } from '../utils/logger';
 import { badgeService } from './badgeService';
+import { levelRoleService } from './levelRoleService';
+import { titleService } from './titleService';
 import { IBadge } from '../types';
 
 class LevelService {
@@ -52,8 +54,27 @@ class LevelService {
     // Check for new badges earned by leveling up
     const newBadges = await badgeService.checkLevelBadges(member, newLevel);
 
+    // Handle level roles
+    let newRole: Role | null = null;
+    try {
+      const roleResult = await levelRoleService.handleLevelUp(member, oldLevel, newLevel);
+      newRole = roleResult.newRole;
+    } catch (error) {
+      logger.error('Error handling level roles:', error);
+    }
+
+    // Check for new titles earned by leveling up
+    try {
+      const newTitles = await titleService.checkLevelTitles(member.id, newLevel);
+      if (newTitles.length > 0) {
+        logger.info(`User ${member.id} earned ${newTitles.length} new title(s) at level ${newLevel}`);
+      }
+    } catch (error) {
+      logger.error('Error checking level titles:', error);
+    }
+
     // Send level up message
-    await this.sendLevelUpMessage(member, oldLevel, newLevel, newBadges);
+    await this.sendLevelUpMessage(member, oldLevel, newLevel, newBadges, newRole);
   }
 
   /**
@@ -63,7 +84,8 @@ class LevelService {
     member: GuildMember,
     oldLevel: number,
     newLevel: number,
-    newBadges: IBadge[]
+    newBadges: IBadge[],
+    newRole: Role | null = null
   ): Promise<void> {
     try {
       const config = await configRepository.findByGuildId(member.guild.id);
@@ -83,7 +105,7 @@ class LevelService {
       }
 
       if (channel) {
-        const embed = createLevelUpEmbed(member.user, oldLevel, newLevel, newBadges);
+        const embed = createLevelUpEmbed(member.user, oldLevel, newLevel, newBadges, newRole);
         await channel.send({ embeds: [embed] });
       }
     } catch (error) {

@@ -3,6 +3,7 @@ import { xpService } from '../../services/xpService';
 import { antiExploitService } from '../../services/antiExploit';
 import { userRepository } from '../../database/repositories/userRepository';
 import { badgeService } from '../../services/badgeService';
+import { missionService } from '../../services/missionService';
 import { isNightTime } from '../../utils/helpers';
 import { logger } from '../../utils/logger';
 
@@ -49,6 +50,10 @@ export async function handleMessageCreate(message: Message): Promise<void> {
     if (xpGain) {
       // Increment message count
       await userRepository.incrementStat(message.author.id, 'messagesCount', 1);
+
+      // Track mission progress
+      const isReply = message.reference !== null;
+      await missionService.trackMessage(message.author.id, isReply);
 
       // Track night messages for badge
       if (isNightTime()) {

@@ -7,6 +7,8 @@ import { randomXp, calculateMultiplier, isToday } from '../utils/helpers';
 import { logger } from '../utils/logger';
 import { XPSource, XPGain } from '../types';
 import { levelService } from './levelService';
+import { economyService } from './economyService';
+import { eventService } from './eventService';
 
 class XPService {
   /**
@@ -49,16 +51,18 @@ class XPService {
     // Get multipliers
     const config = await configRepository.findByGuildId(guildId);
     const isBooster = member.premiumSince !== null;
-    const eventMultiplier = config?.eventActive ? config.eventMultiplier : 1;
+
+    // Get event multiplier from event service
+    const eventXPMultiplier = await eventService.getXPMultiplier();
 
     const multiplier = calculateMultiplier({
       isBooster,
       streakDays: user.stats.currentStreak,
-      eventActive: config?.eventActive,
+      eventActive: eventXPMultiplier > 1,
     });
 
-    // Apply multiplier
-    const finalAmount = Math.floor(amount * multiplier);
+    // Apply base multiplier and event multiplier
+    const finalAmount = Math.floor(amount * multiplier * eventXPMultiplier);
 
     // Add XP
     const result = await userRepository.addXP(discordId, finalAmount, sourceKey || 'bonus');
@@ -73,6 +77,22 @@ class XPService {
     // Log
     logger.xp(discordId, finalAmount, source, { multiplier });
 
+    // Award coins (only for certain sources)
+    let coinsAwarded = 0;
+    if (['message', 'voice', 'reaction_given', 'reaction_received'].includes(source)) {
+      const eventCoinsMultiplier = await eventService.getCoinsMultiplier();
+      coinsAwarded = await economyService.awardCoins(discordId, finalAmount, eventCoinsMultiplier);
+    }
+
+    // Track event gains
+    await eventService.trackEventGains(discordId, finalAmount, coinsAwarded);
+
+    // Track community goal contributions
+    await this.trackCommunityGoalContribution(discordId, source, finalAmount);
+
+    // Check for badge hunt
+    await eventService.checkBadgeHunt(discordId);
+
     // Check for level up
     if (result.leveledUp) {
       await levelService.handleLevelUp(member, result.oldLevel, result.user.level);
@@ -84,6 +104,60 @@ class XPService {
       multiplier,
       finalAmount,
     };
+  }
+
+  /**
+   * Track contribution to community goals
+   */
+  private async trackCommunityGoalContribution(
+    discordId: string,
+    source: XPSource,
+    xpAmount: number
+  ): Promise<void> {
+    try {
+      const activeGoals = await eventService.getActiveEventsByType('community_goal');
+
+      for (const event of activeGoals) {
+        let contribution = 0;
+        let matchType: 'messages' | 'voice_minutes' | 'reactions' | 'total_xp' | null = null;
+
+        switch (event.goalType) {
+          case 'messages':
+            if (source === 'message') {
+              contribution = 1;
+              matchType = 'messages';
+            }
+            break;
+          case 'voice_minutes':
+            if (source === 'voice') {
+              contribution = 1;
+              matchType = 'voice_minutes';
+            }
+            break;
+          case 'reactions':
+            if (source === 'reaction_given' || source === 'reaction_received') {
+              contribution = 1;
+              matchType = 'reactions';
+            }
+            break;
+          case 'total_xp':
+            contribution = xpAmount;
+            matchType = 'total_xp';
+            break;
+        }
+
+        if (contribution > 0 && matchType) {
+          const result = await eventService.addContribution(event.id, discordId, contribution, matchType);
+
+          // If goal completed, process rewards
+          if (result.goalComplete) {
+            await eventService.processGoalCompletion(event.id);
+          }
+        }
+      }
+    } catch (error) {
+      logger.error('Error tracking community goal contribution:', error);
+    }
   }
 
   /**
@@ -157,12 +231,13 @@ class XPService {
   }
 
   /**
-   * Award daily check-in XP
+   * Award daily check-in XP and coins
    */
   async awardDaily(member: GuildMember): Promise<{
     xpGained: number;
     streakBonus: number;
     newStreak: number;
+    coinsGained: number;
   } | null> {
     const discordId = member.id;
 
@@ -182,21 +257,31 @@ class XPService {
     // Calculate streak
     const { currentStreak } = await userRepository.updateStreak(discordId);
 
+    // Get daily event multiplier
+    const dailyMultiplier = await eventService.getDailyMultiplier();
+
     // Calculate XP
     const baseXP = XP_CONFIG.DAILY_CHECK_IN_XP;
     const streakBonus = currentStreak * XP_CONFIG.STREAK_BONUS_XP;
-    const totalXP = baseXP + streakBonus;
+
+    // Apply daily multiplier to XP
+    const finalBaseXP = Math.floor(baseXP * dailyMultiplier);
+    const finalStreakBonus = Math.floor(streakBonus * dailyMultiplier);
 
     // Award XP
-    await this.awardXP(member, 'daily', baseXP);
-    if (streakBonus > 0) {
-      await this.awardXP(member, 'streak', streakBonus);
+    await this.awardXP(member, 'daily', finalBaseXP);
+    if (finalStreakBonus > 0) {
+      await this.awardXP(member, 'streak', finalStreakBonus);
     }
 
+    // Award coins with daily multiplier
+    const coinsGained = await economyService.awardDailyCoins(discordId, currentStreak, dailyMultiplier);
+
     return {
-      xpGained: baseXP,
-      streakBonus,
+      xpGained: finalBaseXP,
+      streakBonus: finalStreakBonus,
       newStreak: currentStreak,
+      coinsGained,
     };
   }
 
