@@ -16,6 +16,7 @@ export const data = new SlashCommandBuilder()
       .setDescription('Tipo de teste')
       .setRequired(true)
       .addChoices(
+        { name: '🔄 TODOS (testa tudo)', value: 'all' },
         { name: 'Mensagem (simula msg curta)', value: 'message_short' },
         { name: 'Mensagem (simula msg media)', value: 'message_medium' },
         { name: 'Mensagem (simula msg longa)', value: 'message_long' },
@@ -41,6 +42,76 @@ export async function execute(interaction: ChatInputCommandInteraction): Promise
     let result = '';
 
     switch (tipo) {
+      case 'all': {
+        // Reset daily limits and penalties first
+        const userToReset = await userRepository.findByDiscordId(member.id);
+        if (userToReset) {
+          userToReset.dailyXP = {
+            date: new Date(),
+            messages: 0,
+            voice: 0,
+            reactions: 0,
+            invites: 0,
+            bonus: 0,
+            total: 0,
+          };
+          await userToReset.save();
+        }
+        antiExploitService.clearPenalty(member.id);
+
+        const results: string[] = [];
+        results.push('🔄 **Resetando limites...**');
+        results.push('✅ Limites zerados\n');
+
+        // Test message short (1 XP)
+        const msgShort = await xpService.awardXP(member, 'message', 1);
+        results.push(msgShort ? `✅ Msg curta: +${msgShort.finalAmount} XP` : '❌ Msg curta: Bloqueado');
+
+        // Test message medium (3 XP)
+        const msgMed = await xpService.awardXP(member, 'message', 3);
+        results.push(msgMed ? `✅ Msg media: +${msgMed.finalAmount} XP` : '❌ Msg media: Bloqueado');
+
+        // Test message long (5 XP)
+        const msgLong = await xpService.awardXP(member, 'message', 5);
+        results.push(msgLong ? `✅ Msg longa: +${msgLong.finalAmount} XP` : '❌ Msg longa: Bloqueado');
+
+        // Test voice 2 people (1 XP)
+        const voice2 = await xpService.awardXP(member, 'voice', 1);
+        results.push(voice2 ? `✅ Voz (2p): +${voice2.finalAmount} XP` : '❌ Voz (2p): Bloqueado');
+
+        // Test voice 5 people (4 XP)
+        const voice5 = await xpService.awardXP(member, 'voice', 4);
+        results.push(voice5 ? `✅ Voz (5p): +${voice5.finalAmount} XP` : '❌ Voz (5p): Bloqueado');
+
+        // Test reaction given (1 XP)
+        const reactGiven = await xpService.awardXP(member, 'reaction_given');
+        results.push(reactGiven ? `✅ Reacao dada: +${reactGiven.finalAmount} XP` : '❌ Reacao dada: Bloqueado');
+
+        // Test reaction received (2 XP)
+        const reactReceived = await xpService.awardXP(member, 'reaction_received');
+        results.push(reactReceived ? `✅ Reacao recebida: +${reactReceived.finalAmount} XP` : '❌ Reacao recebida: Bloqueado');
+
+        // Test daily
+        const daily = await xpService.awardDaily(member);
+        results.push(daily ? `✅ Daily: +${daily.xpGained} XP (streak: ${daily.newStreak})` : '❌ Daily: Ja coletou');
+
+        // Calculate total XP gained
+        let totalGained = 0;
+        if (msgShort) totalGained += msgShort.finalAmount;
+        if (msgMed) totalGained += msgMed.finalAmount;
+        if (msgLong) totalGained += msgLong.finalAmount;
+        if (voice2) totalGained += voice2.finalAmount;
+        if (voice5) totalGained += voice5.finalAmount;
+        if (reactGiven) totalGained += reactGiven.finalAmount;
+        if (reactReceived) totalGained += reactReceived.finalAmount;
+        if (daily) totalGained += daily.xpGained + daily.streakBonus;
+
+        results.push(`\n**Total ganho neste teste:** ${totalGained} XP`);
+
+        result = results.join('\n');
+        break;
+      }
+
       case 'message_short': {
         // Simula mensagem curta (1-20 chars) = 1 XP
         const xpGain = await xpService.awardXP(member, 'message', 1);
