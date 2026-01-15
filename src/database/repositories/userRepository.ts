@@ -90,6 +90,43 @@ export class UserRepository {
   }
 
   /**
+   * Add admin XP (does NOT count towards daily limits)
+   * Use for events, competitions, manual rewards
+   */
+  async addAdminXP(
+    discordId: string,
+    amount: number
+  ): Promise<{ user: UserDocument; leveledUp: boolean; oldLevel: number }> {
+    const user = await User.findOne({ discordId });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const oldLevel = user.level;
+
+    // Update XP (without touching daily limits)
+    user.xp += amount;
+    user.totalXP += amount;
+    user.stats.lastActive = new Date();
+
+    // Calculate new level from total XP
+    const newLevel = levelFromXp(user.totalXP);
+    const leveledUp = newLevel > oldLevel;
+
+    // Always update level to correct value
+    user.level = newLevel;
+
+    await user.save();
+
+    return {
+      user,
+      leveledUp,
+      oldLevel,
+    };
+  }
+
+  /**
    * Set user level
    */
   async setLevel(discordId: string, level: number): Promise<UserDocument | null> {

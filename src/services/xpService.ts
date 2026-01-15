@@ -215,7 +215,8 @@ class XPService {
   }
 
   /**
-   * Admin give XP
+   * Admin give XP (does NOT count towards daily limits)
+   * Use for events, competitions, manual rewards
    */
   async adminGiveXP(member: GuildMember, amount: number): Promise<XPGain> {
     const discordId = member.id;
@@ -228,8 +229,8 @@ class XPService {
       member.user.avatar
     );
 
-    // Add XP directly (no multipliers)
-    const result = await userRepository.addXP(discordId, amount, 'bonus');
+    // Add XP directly (no multipliers, no daily limit impact)
+    const result = await userRepository.addAdminXP(discordId, amount);
 
     // Log
     await activityLogRepository.logXPGain(discordId, 'admin_give', amount, {

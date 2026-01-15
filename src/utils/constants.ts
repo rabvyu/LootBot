@@ -28,7 +28,7 @@ export const XP_CONFIG = {
   },
 
   // Minimum requirements
-  MIN_MESSAGE_LENGTH: 5,
+  MIN_MESSAGE_LENGTH: 3, // Minimum 3 characters for XP
   MIN_VOICE_MEMBERS: 2,
 
   // Invite validation
