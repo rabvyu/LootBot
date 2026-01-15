@@ -1,11 +1,10 @@
-import { GuildMember, TextChannel } from 'discord.js';
+import { GuildMember, TextChannel, Client } from 'discord.js';
 import { userRepository } from '../database/repositories/userRepository';
 import { badgeRepository } from '../database/repositories/badgeRepository';
 import { configRepository } from '../database/repositories/configRepository';
 import { BadgeDocument } from '../database/models/Badge';
-import { BADGES } from '../utils/constants';
 import { daysBetween } from '../utils/helpers';
-import { createBadgeEarnedEmbed, createRareBadgeAnnouncementEmbed } from '../utils/embeds';
+import { createRareBadgeAnnouncementEmbed } from '../utils/embeds';
 import { logger } from '../utils/logger';
 import { IBadge, BadgeCategory } from '../types';
 
@@ -34,10 +33,10 @@ class BadgeService {
       return null;
     }
 
-    // Get badge info
+    // Get badge info from database
     const badge = await badgeRepository.findById(badgeId);
     if (!badge) {
-      logger.warn(`Badge not found: ${badgeId}`);
+      logger.warn(`Badge not found in database: ${badgeId}`);
       return null;
     }
 
@@ -69,13 +68,18 @@ class BadgeService {
 
   /**
    * Check and award level badges
+   * Uses badges from database with category 'level'
    */
   async checkLevelBadges(member: GuildMember, level: number): Promise<IBadge[]> {
     const earnedBadges: IBadge[] = [];
 
-    for (const badge of BADGES.LEVEL) {
-      if (level >= badge.level) {
-        const awarded = await this.awardBadge(member, badge.id);
+    // Get all level badges from database
+    const levelBadges = await badgeRepository.findByCategory('level');
+
+    for (const badge of levelBadges) {
+      // Level badges have requirement type 'level' with value = required level
+      if (badge.requirement.type === 'level' && level >= badge.requirement.value) {
+        const awarded = await this.awardBadge(member, badge.badgeId);
         if (awarded) {
           earnedBadges.push(awarded);
         }
@@ -87,6 +91,7 @@ class BadgeService {
 
   /**
    * Check and award time-based badges
+   * Uses badges from database with category 'time'
    */
   async checkTimeBadges(member: GuildMember): Promise<IBadge[]> {
     const user = await userRepository.findByDiscordId(member.id);
@@ -95,9 +100,12 @@ class BadgeService {
     const earnedBadges: IBadge[] = [];
     const daysMember = daysBetween(user.joinedAt, new Date());
 
-    for (const badge of BADGES.TIME) {
-      if (daysMember >= badge.days) {
-        const awarded = await this.awardBadge(member, badge.id);
+    // Get all time badges from database
+    const timeBadges = await badgeRepository.findByCategory('time');
+
+    for (const badge of timeBadges) {
+      if (badge.requirement.type === 'days_member' && daysMember >= badge.requirement.value) {
+        const awarded = await this.awardBadge(member, badge.badgeId);
         if (awarded) {
           earnedBadges.push(awarded);
         }
@@ -108,7 +116,29 @@ class BadgeService {
   }
 
   /**
-   * Check and award achievement badges
+   * Check founder badge (first N members)
+   */
+  async checkFounderBadge(member: GuildMember): Promise<IBadge | null> {
+    // Find founder badge from database
+    const founderBadge = await badgeRepository.findById('time_founder');
+    if (!founderBadge) {
+      logger.debug('Founder badge not found in database');
+      return null;
+    }
+
+    const earlyAdopters = await userRepository.getEarlyAdopters(founderBadge.requirement.value);
+    const isEarlyAdopter = earlyAdopters.some((u) => u.discordId === member.id);
+
+    if (isEarlyAdopter) {
+      return this.awardBadge(member, 'time_founder');
+    }
+
+    return null;
+  }
+
+  /**
+   * Check and award achievement badges (social, voice, messages, etc)
+   * Uses badges from database with category 'achievement'
    */
   async checkAchievementBadges(member: GuildMember): Promise<IBadge[]> {
     const user = await userRepository.findByDiscordId(member.id);
@@ -116,18 +146,24 @@ class BadgeService {
 
     const earnedBadges: IBadge[] = [];
 
-    for (const badge of BADGES.ACHIEVEMENT) {
+    // Get all achievement badges from database
+    const achievementBadges = await badgeRepository.findByCategory('achievement');
+
+    for (const badge of achievementBadges) {
       let shouldAward = false;
 
       switch (badge.requirement.type) {
+        case 'messages':
+          shouldAward = user.stats.messagesCount >= badge.requirement.value;
+          break;
+        case 'voice_hours':
+          shouldAward = user.stats.voiceMinutes >= badge.requirement.value * 60;
+          break;
         case 'reactions_given':
           shouldAward = user.stats.reactionsGiven >= badge.requirement.value;
           break;
         case 'reactions_received':
           shouldAward = user.stats.reactionsReceived >= badge.requirement.value;
-          break;
-        case 'voice_hours':
-          shouldAward = user.stats.voiceMinutes >= badge.requirement.value * 60;
           break;
         case 'streak':
           shouldAward = user.stats.longestStreak >= badge.requirement.value;
@@ -135,17 +171,17 @@ class BadgeService {
         case 'invites':
           shouldAward = user.stats.invitesCount >= badge.requirement.value;
           break;
-        case 'messages':
-          shouldAward = user.stats.messagesCount >= badge.requirement.value;
-          break;
         case 'boost':
           shouldAward = member.premiumSince !== null;
           break;
-        // night_messages, top_weekly, top_monthly, early_member - handled separately
+        // Manual badges are not auto-awarded
+        case 'manual':
+          shouldAward = false;
+          break;
       }
 
       if (shouldAward) {
-        const awarded = await this.awardBadge(member, badge.id);
+        const awarded = await this.awardBadge(member, badge.badgeId);
         if (awarded) {
           earnedBadges.push(awarded);
         }
@@ -156,42 +192,15 @@ class BadgeService {
   }
 
   /**
-   * Check early adopter badge
-   */
-  async checkEarlyAdopterBadge(member: GuildMember): Promise<IBadge | null> {
-    const earlyBadge = BADGES.ACHIEVEMENT.find((b) => b.id === 'early_adopter');
-    if (!earlyBadge) return null;
-
-    const earlyAdopters = await userRepository.getEarlyAdopters(earlyBadge.requirement.value);
-    const isEarlyAdopter = earlyAdopters.some((u) => u.discordId === member.id);
-
-    if (isEarlyAdopter) {
-      return this.awardBadge(member, 'early_adopter');
-    }
-
-    return null;
-  }
-
-  /**
-   * Award top weekly badge
-   */
-  async awardTopWeeklyBadge(member: GuildMember): Promise<IBadge | null> {
-    return this.awardBadge(member, 'top_weekly');
-  }
-
-  /**
-   * Award top monthly badge
-   */
-  async awardTopMonthlyBadge(member: GuildMember): Promise<IBadge | null> {
-    return this.awardBadge(member, 'top_monthly');
-  }
-
-  /**
    * Award booster badge
    */
   async awardBoosterBadge(member: GuildMember): Promise<IBadge | null> {
     if (member.premiumSince) {
-      return this.awardBadge(member, 'booster');
+      // Try to find a boost badge in the database
+      const boostBadge = await badgeRepository.findById('special_booster');
+      if (boostBadge) {
+        return this.awardBadge(member, 'special_booster');
+      }
     }
     return null;
   }
@@ -279,7 +288,8 @@ class BadgeService {
   }
 
   /**
-   * Check all badges for a user
+   * Check all automatic badges for a user
+   * This is the main method that should be called to check all badges
    */
   async checkAllBadges(member: GuildMember): Promise<IBadge[]> {
     const user = await userRepository.findByDiscordId(member.id);
@@ -295,19 +305,58 @@ class BadgeService {
     const timeBadges = await this.checkTimeBadges(member);
     allEarned.push(...timeBadges);
 
+    // Check founder badge (first N members)
+    const founderBadge = await this.checkFounderBadge(member);
+    if (founderBadge) allEarned.push(founderBadge);
+
     // Check achievement badges
     const achievementBadges = await this.checkAchievementBadges(member);
     allEarned.push(...achievementBadges);
-
-    // Check early adopter
-    const earlyBadge = await this.checkEarlyAdopterBadge(member);
-    if (earlyBadge) allEarned.push(earlyBadge);
 
     // Check booster badge
     const boosterBadge = await this.awardBoosterBadge(member);
     if (boosterBadge) allEarned.push(boosterBadge);
 
     return allEarned;
+  }
+
+  /**
+   * Retroactively check badges for all users in a guild
+   * Used by admin command to award missing badges
+   */
+  async checkAllUsersInGuild(client: Client, guildId: string): Promise<{ userId: string; badges: IBadge[] }[]> {
+    const results: { userId: string; badges: IBadge[] }[] = [];
+
+    const guild = client.guilds.cache.get(guildId);
+    if (!guild) {
+      logger.error(`Guild ${guildId} not found`);
+      return results;
+    }
+
+    // Get all users from database
+    const users = await userRepository.getLeaderboard(10000, 'alltime');
+
+    logger.info(`Checking badges for ${users.length} users in guild ${guildId}`);
+
+    for (const user of users) {
+      try {
+        const member = await guild.members.fetch(user.discordId).catch(() => null);
+        if (!member) {
+          logger.debug(`Member ${user.discordId} not found in guild, skipping`);
+          continue;
+        }
+
+        const earned = await this.checkAllBadges(member);
+        if (earned.length > 0) {
+          results.push({ userId: user.discordId, badges: earned });
+          logger.info(`User ${user.username} earned ${earned.length} badges: ${earned.map(b => b.name).join(', ')}`);
+        }
+      } catch (error) {
+        logger.error(`Error checking badges for user ${user.discordId}:`, error);
+      }
+    }
+
+    return results;
   }
 
   /**

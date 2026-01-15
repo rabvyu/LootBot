@@ -16,8 +16,8 @@ export async function handleGuildMemberAdd(member: GuildMember): Promise<void> {
       member.user.avatar
     );
 
-    // Check for early adopter badge
-    await badgeService.checkEarlyAdopterBadge(member);
+    // Check for founder badge (first N members)
+    await badgeService.checkFounderBadge(member);
 
     logger.info(`New member joined: ${member.user.username} (${member.id})`);
   } catch (error) {

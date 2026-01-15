@@ -4,6 +4,7 @@ import { XP_CONFIG } from '../utils/constants';
 import { logger } from '../utils/logger';
 import { xpService } from './xpService';
 import { antiExploitService } from './antiExploit';
+import { badgeService } from './badgeService';
 import { VoiceSession } from '../types';
 
 class VoiceTrackerService {
@@ -100,6 +101,18 @@ class VoiceTrackerService {
     if (finalMinutes > 0) {
       await userRepository.incrementStat(member.id, 'voiceMinutes', finalMinutes);
       logger.debug(`Voice session ended: ${member.id}, total minutes: ${finalMinutes}`);
+
+      // Check for voice-related badges if session was at least 10 minutes
+      if (finalMinutes >= 10) {
+        try {
+          const earnedBadges = await badgeService.checkAchievementBadges(member);
+          if (earnedBadges.length > 0) {
+            logger.info(`User ${member.id} earned ${earnedBadges.length} badges after voice session: ${earnedBadges.map(b => b.name).join(', ')}`);
+          }
+        } catch (error) {
+          logger.error('Error checking badges after voice session:', error);
+        }
+      }
     }
 
     this.sessions.delete(sessionKey);
