@@ -18,6 +18,7 @@ import { pvpBadges } from './12-pvp';
 import { giftBadges } from './13-gifts';
 import { raidBadges } from './14-raids';
 import { tournamentBadges } from './15-tournaments';
+import { wildcardBadges } from './16-wildcard';
 
 // Combinar todas as badges
 export const allBadges: BadgeDefinition[] = [
@@ -36,7 +37,8 @@ export const allBadges: BadgeDefinition[] = [
   ...giftBadges,             // 4 badges
   ...raidBadges,             // 9 badges
   ...tournamentBadges,       // 7 badges
-];                           // Total: 182 badges
+  ...wildcardBadges,         // 54 badges (classes wildcard)
+];                           // Total: 236 badges
 
 // Exportar por categoria para uso individual
 export {
@@ -55,6 +57,7 @@ export {
   giftBadges,
   raidBadges,
   tournamentBadges,
+  wildcardBadges,
 };
 
 // Exportar tipos
@@ -91,6 +94,7 @@ export const badgeStats = {
     championship: championshipBadges.length,
     special: specialBadges.length,
     pvp: pvpBadges.length,
+    wildcard: wildcardBadges.length,
   },
   byRarity: {
     common: allBadges.filter(b => b.rarity === 'common').length,

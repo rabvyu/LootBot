@@ -14,7 +14,8 @@ export type BadgeCategory =
   | '3dprint'
   | 'modding'
   | 'championship'
-  | 'pvp';
+  | 'pvp'
+  | 'wildcard';
 
 export type BadgeRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 
@@ -34,7 +35,12 @@ export type RequirementType =
   | 'custom'
   | 'pvp_wins'
   | 'pvp_streak'
-  | 'pvp_rank';
+  | 'pvp_rank'
+  | 'wildcard_first'       // Primeiros a conseguir classe wildcard
+  | 'wildcard_class'       // Ter classe wildcard específica
+  | 'wildcard_battles'     // Vitórias com classe wildcard
+  | 'wildcard_damage'      // Dano causado com classe wildcard
+  | 'wildcard_collector';  // Coleção de classes wildcard
 
 export interface BadgeRequirement {
   type: RequirementType;

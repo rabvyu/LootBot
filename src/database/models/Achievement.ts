@@ -142,7 +142,7 @@ const AchievementProgressSchema = new Schema<IAchievementProgress>({
   },
 }, { timestamps: true });
 
-AchievementProgressSchema.index({ discordId: 1 });
+// Note: discordId already has unique: true which creates an index
 AchievementProgressSchema.index({ totalPoints: -1 });
 
 export const AchievementDefinition = mongoose.model<IAchievementDefinition>('AchievementDefinition', AchievementDefinitionSchema);

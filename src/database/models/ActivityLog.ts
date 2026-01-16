@@ -30,7 +30,7 @@ const ActivityLogSchema = new Schema<ActivityLogDocument>({
   timestamp: {
     type: Date,
     default: Date.now,
-    index: true,
+    // Note: index is created via TTL index below (line 43)
   },
 });
 
