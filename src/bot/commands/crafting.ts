@@ -43,6 +43,18 @@ export const data = new SlashCommandBuilder()
       .setDescription('Criar um item')
       .addStringOption((opt) =>
         opt.setName('receita').setDescription('ID da receita').setRequired(true)
+          .addChoices(
+            { name: 'Ferro Refinado', value: 'refined_iron' },
+            { name: 'Barra de Ouro', value: 'gold_bar' },
+            { name: 'Pacote de Iscas', value: 'bait_pack' },
+            { name: 'Pocao de XP Pequena', value: 'xp_potion_small' },
+            { name: 'Pocao de XP Grande', value: 'xp_potion_large' },
+            { name: 'Vara de Pesca Melhorada', value: 'rod_improved' },
+            { name: 'Vara de Pesca Avancada', value: 'rod_advanced' },
+            { name: 'Ovo de Pet Comum', value: 'pet_egg_common' },
+            { name: 'Ovo de Pet Raro', value: 'pet_egg_rare' },
+            { name: 'Amuleto da Sorte', value: 'lucky_charm' }
+          )
       )
   )
   .addSubcommand((sub) =>
@@ -51,6 +63,18 @@ export const data = new SlashCommandBuilder()
       .setDescription('Ver detalhes de uma receita')
       .addStringOption((opt) =>
         opt.setName('receita').setDescription('ID da receita').setRequired(true)
+          .addChoices(
+            { name: 'Ferro Refinado', value: 'refined_iron' },
+            { name: 'Barra de Ouro', value: 'gold_bar' },
+            { name: 'Pacote de Iscas', value: 'bait_pack' },
+            { name: 'Pocao de XP Pequena', value: 'xp_potion_small' },
+            { name: 'Pocao de XP Grande', value: 'xp_potion_large' },
+            { name: 'Vara de Pesca Melhorada', value: 'rod_improved' },
+            { name: 'Vara de Pesca Avancada', value: 'rod_advanced' },
+            { name: 'Ovo de Pet Comum', value: 'pet_egg_common' },
+            { name: 'Ovo de Pet Raro', value: 'pet_egg_rare' },
+            { name: 'Amuleto da Sorte', value: 'lucky_charm' }
+          )
       )
   )
   .addSubcommand((sub) =>

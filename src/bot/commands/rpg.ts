@@ -73,6 +73,9 @@ export const data = new SlashCommandBuilder()
   )
   .addSubcommand(sub =>
     sub.setName('ranking').setDescription('Ver ranking de personagens')
+  )
+  .addSubcommand(sub =>
+    sub.setName('tutorial').setDescription('Tutorial completo do bot - Aprenda todos os sistemas!')
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -102,6 +105,9 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       break;
     case 'ranking':
       await handleRanking(interaction);
+      break;
+    case 'tutorial':
+      await handleTutorial(interaction);
       break;
   }
 }
@@ -592,4 +598,394 @@ function createProgressBar(current: number, max: number): string {
   const filled = Math.floor(percentage / 10);
   const empty = 10 - filled;
   return '█'.repeat(filled) + '░'.repeat(empty);
+}
+
+// Tutorial pages
+const TUTORIAL_PAGES = [
+  // Page 0: Welcome
+  {
+    title: '📖 Tutorial - Bem-vindo!',
+    description: `**Bem-vindo ao Bot de Gamificacao!**
+
+Este bot transforma seu servidor Discord em um RPG completo com:
+
+🎮 **980 Equipamentos** em 16 sets diferentes
+👹 **150 Monstros** em 32 localizacoes
+🏅 **174 Badges** para conquistar
+🐾 **10 Pets** para colecionar
+⚔️ **Sistema de RPG** com 4 classes
+💰 **Economia** com loja, cassino e trabalhos
+🎯 **Missoes** diarias e semanais
+📦 **Crafting** com 10 receitas
+🗺️ **Expedicoes** e muito mais!
+
+Use os botoes abaixo para navegar pelo tutorial.`,
+    color: '#FFD700',
+  },
+  // Page 1: Getting Started
+  {
+    title: '📖 Tutorial - Primeiros Passos',
+    description: `**Como Comecar:**
+
+**1. Crie seu Personagem**
+\`/rpg criar <nome>\`
+Escolha entre 4 classes:
+⚔️ **Guerreiro** - Alto HP e defesa
+🔮 **Mago** - Alto dano magico e critico
+🏹 **Arqueiro** - Criticos devastadores
+🛡️ **Paladino** - Defesa maxima
+
+**2. Ganhe XP no Servidor**
+- Envie mensagens: 15-25 XP (cooldown 60s)
+- Fique em call de voz: 5 XP/min
+- De reacoes: 2 XP cada
+- Receba reacoes: 5 XP cada
+
+**3. Colete sua Recompensa Diaria**
+\`/daily\` - Ganhe coins e XP diariamente!
+Mantenha um streak para bonus!`,
+    color: '#00FF00',
+  },
+  // Page 2: Combat System
+  {
+    title: '📖 Tutorial - Sistema de Combate',
+    description: `**Batalhas e Exploracao:**
+
+**Explorar Locais**
+\`/rpg locais\` - Ver todas as 32 localizacoes
+\`/rpg explorar <local>\` - Batalhar em um local
+
+**Localizacoes por Tier:**
+🌱 Tier 1 (Lv.1-7): Floresta, Planicie, Caverna...
+🌿 Tier 2 (Lv.5-12): Pantano, Montanha...
+🌲 Tier 3 (Lv.10-22): Vulcao, Cemiterio...
+⚡ Tier 4 (Lv.20-35): Castelo, Abismo...
+🔥 Tier 5 (Lv.35-52): Inferno, Templo...
+💀 Tier 6 (Lv.50-80): Void, Dragao...
+
+**Tipos de Monstros:**
+🟢 Normal - Faceis, drops basicos
+🟡 Elite - Mais fortes, melhores drops
+🔴 Boss - Muito fortes, drops raros
+
+**Curar**
+\`/rpg curar\` - Restaura HP (custa coins)`,
+    color: '#FF6600',
+  },
+  // Page 3: Taming System
+  {
+    title: '📖 Tutorial - Sistema de Doma',
+    description: `**Capture e Treine Monstros!**
+
+**Como Capturar:**
+1. Derrote um monstro em \`/rpg explorar\`
+2. Clique no botao "Tentar Capturar"
+3. Chance de captura baseada no HP restante
+
+**Gerenciar Monstros:**
+\`/domar lista\` - Ver seus monstros
+\`/domar ativo\` - Ver monstro ativo
+\`/domar selecionar <nome>\` - Trocar ativo
+\`/domar alimentar <comida>\` - Alimentar
+\`/domar curar\` - Curar monstro
+\`/domar batalhar <local>\` - Batalhar com pet
+
+**Tipos de Comida:**
+🍞 Pao (50 coins) | 🐟 Peixe (100 coins)
+🍖 Carne (150 coins) | 🎂 Bolo (200 coins)
+🧪 Elixir (500 coins)
+
+Maximo: 10 monstros domados`,
+    color: '#9B59B6',
+  },
+  // Page 4: Equipment System
+  {
+    title: '📖 Tutorial - Sistema de Equipamentos',
+    description: `**980 Equipamentos em 16 Sets!**
+
+**Slots de Equipamento:**
+⚔️ Arma | 🛡️ Armadura | ⛑️ Elmo
+👢 Botas | 🧤 Luvas | 💍 Anel | 📿 Amuleto
+
+**Raridades:**
+⬜ Comum | 🟢 Incomum | 🔵 Raro
+🟣 Epico | 🟡 Lendario
+
+**Comandos:**
+\`/equipamento inventario\` - Ver itens
+\`/equipamento equipados\` - Ver equipados
+\`/equipamento equipar <id>\` - Equipar item
+\`/equipamento desequipar <slot>\` - Remover
+\`/equipamento vender <id>\` - Vender por coins
+
+**Bonus de Set:**
+Equipe 2+ pecas do mesmo set para bonus!
+4 pecas = bonus ainda maior!
+
+Sets: Iniciante, Cacador, Lobisomem, Assassino,
+Elemental, Vampiro, Infernal, Celestial, Draconico...`,
+    color: '#8B4513',
+  },
+  // Page 5: Jobs & Training
+  {
+    title: '📖 Tutorial - Trabalhos e Treinamento',
+    description: `**Ganhe Coins e XP Passivamente!**
+
+**Sistema de Trabalhos:**
+\`/trabalho lista\` - Ver trabalhos
+\`/trabalho aceitar <trabalho>\` - Aceitar
+\`/trabalho turno\` - Completar turno
+\`/trabalho status\` - Ver status
+
+Trabalhos: Taverneiro, Mensageiro, Guarda,
+Ferreiro, Pescador, Lenhador, Mineiro...
+
+**Sistema de Treinamento:**
+\`/treinar lista\` - Ver opcoes
+\`/treinar iniciar <tipo>\` - Comecar
+\`/treinar coletar\` - Coletar XP
+\`/treinar parar\` - Parar treino
+
+Tipos: Socar Arvore, Chutar Arvore, Cortar,
+Minerar, Meditar, Correr, Nadar, Escalar
+
+XP acumula automaticamente (max 8h)!`,
+    color: '#DAA520',
+  },
+  // Page 6: Pets & Resources
+  {
+    title: '📖 Tutorial - Pets e Recursos',
+    description: `**10 Pets para Colecionar!**
+
+**Comandos de Pet:**
+\`/pet lista\` - Ver pets disponiveis
+\`/pet comprar <pet>\` - Comprar pet
+\`/pet meus\` - Ver seus pets
+\`/pet ativar <pet>\` - Ativar pet
+\`/pet alimentar\` - Alimentar pet
+\`/pet coletar\` - Coletar coins/XP
+
+Pets geram coins e XP por hora!
+
+**Sistema de Recursos:**
+\`/recursos\` - Ver seus recursos
+\`/pescar\` - Pescar peixes
+
+Recursos: 🪵 Madeira, 🪨 Pedra, 🔩 Ferro,
+🥇 Ouro, 💎 Diamante, ✨ Essencia
+
+Use recursos para crafting!`,
+    color: '#00CED1',
+  },
+  // Page 7: Crafting & Expeditions
+  {
+    title: '📖 Tutorial - Crafting e Expedicoes',
+    description: `**Crie Itens e Explore!**
+
+**Crafting (10 Receitas):**
+\`/crafting receitas\` - Ver receitas
+\`/crafting criar <receita>\` - Criar item
+\`/crafting info <receita>\` - Detalhes
+
+Crie: Barras de metal, Pocoes de XP,
+Varas de pesca, Ovos de pet, Amuletos...
+
+**Expedicoes (7 Disponíveis):**
+\`/expedicao lista\` - Ver expedicoes
+\`/expedicao iniciar <exp>\` - Iniciar
+\`/expedicao status\` - Ver progresso
+\`/expedicao resgatar\` - Coletar rewards
+
+Dificuldades: Facil, Medio, Dificil, Extremo
+Duracoes: 1h ate 24h
+Rewards: Coins, XP, Recursos, Badges raras!`,
+    color: '#9C27B0',
+  },
+  // Page 8: Groups & Economy
+  {
+    title: '📖 Tutorial - Grupos e Economia',
+    description: `**Jogue em Grupo!**
+
+**Sistema de Grupos (1-8 jogadores):**
+\`/grupo criar\` - Criar grupo
+\`/grupo convidar @user\` - Convidar
+\`/grupo batalhar <local>\` - Batalha em grupo
+\`/grupo info\` - Ver membros
+
+Rewards divididos por contribuicao!
+
+**Economia:**
+\`/saldo\` - Ver seus coins
+\`/transferir @user <valor>\` - Enviar coins
+\`/loja\` - Comprar itens
+\`/comprar <item>\` - Comprar item
+
+**Cassino:**
+\`/cassino coinflip\` - Cara ou coroa
+\`/cassino dados\` - Jogo de dados
+\`/cassino slots\` - Maquina de slots
+\`/cassino roleta\` - Roleta
+\`/cassino crash\` - Crash game`,
+    color: '#E91E63',
+  },
+  // Page 9: Badges & Leaderboard
+  {
+    title: '📖 Tutorial - Badges e Rankings',
+    description: `**174 Badges para Conquistar!**
+
+**Categorias de Badges:**
+🎯 **Nivel** - Por alcancar niveis
+📅 **Tempo** - Por tempo no servidor
+🏆 **Conquistas** - Por acoes especificas
+⭐ **Especiais** - Eventos e raras
+
+\`/badges\` - Ver suas badges
+\`/badges @user\` - Ver de outro usuario
+
+**Leaderboards:**
+\`/leaderboard\` - Top 10 por XP
+\`/rank\` - Ver seu rank
+\`/rpg ranking\` - Top personagens RPG
+
+**Outros Comandos Uteis:**
+\`/profile\` - Seu perfil completo
+\`/stats\` - Estatisticas do servidor
+\`/streak\` - Ver seu streak
+\`/missoes\` - Missoes diarias/semanais
+\`/help\` - Lista de comandos`,
+    color: '#3F51B5',
+  },
+  // Page 10: Summary
+  {
+    title: '📖 Tutorial - Resumo Final',
+    description: `**Resumo dos Sistemas:**
+
+⚔️ **RPG**: 4 classes, 150 monstros, 32 locais
+🎒 **Equipamentos**: 980 itens, 16 sets
+🐾 **Doma**: Capture e treine monstros
+🐕 **Pets**: 10 pets que geram recursos
+💼 **Trabalhos**: 10 profissoes
+🏋️ **Treino**: 8 tipos de treino idle
+📦 **Crafting**: 10 receitas
+🗺️ **Expedicoes**: 7 expedicoes
+👥 **Grupos**: Batalhas cooperativas
+🎰 **Cassino**: 6 jogos de aposta
+🏅 **Badges**: 174 conquistas
+💰 **Economia**: Loja, transferencias
+
+**Dica Final:**
+Comece com \`/rpg criar\` e \`/daily\`!
+Explore, batalhe, e divirta-se!
+
+Boa sorte, aventureiro! ⚔️`,
+    color: '#4CAF50',
+  },
+];
+
+async function handleTutorial(interaction: ChatInputCommandInteraction) {
+  let currentPage = 0;
+
+  const createTutorialEmbed = (pageIndex: number): EmbedBuilder => {
+    const page = TUTORIAL_PAGES[pageIndex];
+    return new EmbedBuilder()
+      .setTitle(page.title)
+      .setDescription(page.description)
+      .setColor(page.color as `#${string}`)
+      .setFooter({ text: `Pagina ${pageIndex + 1}/${TUTORIAL_PAGES.length} | Use os botoes para navegar` });
+  };
+
+  const createButtons = (pageIndex: number): ActionRowBuilder<ButtonBuilder> => {
+    const row = new ActionRowBuilder<ButtonBuilder>();
+
+    // First page button
+    row.addComponents(
+      new ButtonBuilder()
+        .setCustomId('tutorial_first')
+        .setLabel('⏮️')
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(pageIndex === 0)
+    );
+
+    // Previous button
+    row.addComponents(
+      new ButtonBuilder()
+        .setCustomId('tutorial_prev')
+        .setLabel('◀️')
+        .setStyle(ButtonStyle.Primary)
+        .setDisabled(pageIndex === 0)
+    );
+
+    // Page indicator
+    row.addComponents(
+      new ButtonBuilder()
+        .setCustomId('tutorial_page')
+        .setLabel(`${pageIndex + 1}/${TUTORIAL_PAGES.length}`)
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(true)
+    );
+
+    // Next button
+    row.addComponents(
+      new ButtonBuilder()
+        .setCustomId('tutorial_next')
+        .setLabel('▶️')
+        .setStyle(ButtonStyle.Primary)
+        .setDisabled(pageIndex === TUTORIAL_PAGES.length - 1)
+    );
+
+    // Last page button
+    row.addComponents(
+      new ButtonBuilder()
+        .setCustomId('tutorial_last')
+        .setLabel('⏭️')
+        .setStyle(ButtonStyle.Secondary)
+        .setDisabled(pageIndex === TUTORIAL_PAGES.length - 1)
+    );
+
+    return row;
+  };
+
+  const response = await interaction.reply({
+    embeds: [createTutorialEmbed(currentPage)],
+    components: [createButtons(currentPage)],
+    fetchReply: true,
+  });
+
+  const collector = response.createMessageComponentCollector({
+    componentType: ComponentType.Button,
+    filter: (i) => i.user.id === interaction.user.id,
+    time: 300000, // 5 minutes
+  });
+
+  collector.on('collect', async (buttonInteraction) => {
+    switch (buttonInteraction.customId) {
+      case 'tutorial_first':
+        currentPage = 0;
+        break;
+      case 'tutorial_prev':
+        currentPage = Math.max(0, currentPage - 1);
+        break;
+      case 'tutorial_next':
+        currentPage = Math.min(TUTORIAL_PAGES.length - 1, currentPage + 1);
+        break;
+      case 'tutorial_last':
+        currentPage = TUTORIAL_PAGES.length - 1;
+        break;
+    }
+
+    await buttonInteraction.update({
+      embeds: [createTutorialEmbed(currentPage)],
+      components: [createButtons(currentPage)],
+    });
+  });
+
+  collector.on('end', async () => {
+    try {
+      await interaction.editReply({
+        components: [],
+      });
+    } catch {
+      // Message might be deleted
+    }
+  });
 }

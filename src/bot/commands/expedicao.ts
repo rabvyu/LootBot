@@ -36,6 +36,15 @@ export const data = new SlashCommandBuilder()
       .setDescription('Iniciar uma expedicao')
       .addStringOption((opt) =>
         opt.setName('expedicao').setDescription('ID da expedicao').setRequired(true)
+          .addChoices(
+            { name: '🌲 Floresta Tranquila (Facil)', value: 'forest' },
+            { name: '🕳️ Caverna Sombria (Facil)', value: 'cave' },
+            { name: '🏛️ Ruinas Antigas (Medio)', value: 'ruins' },
+            { name: '🐊 Pantano Sombrio (Medio)', value: 'swamp' },
+            { name: '🌋 Vulcao Ardente (Dificil)', value: 'volcano' },
+            { name: '⚔️ Masmorra Profunda (Dificil)', value: 'dungeon' },
+            { name: '🌑 Abismo Eterno (Extremo)', value: 'abyss' }
+          )
       )
   )
   .addSubcommand((sub) =>
@@ -53,6 +62,15 @@ export const data = new SlashCommandBuilder()
       .setDescription('Ver detalhes de uma expedicao')
       .addStringOption((opt) =>
         opt.setName('expedicao').setDescription('ID da expedicao').setRequired(true)
+          .addChoices(
+            { name: '🌲 Floresta Tranquila (Facil)', value: 'forest' },
+            { name: '🕳️ Caverna Sombria (Facil)', value: 'cave' },
+            { name: '🏛️ Ruinas Antigas (Medio)', value: 'ruins' },
+            { name: '🐊 Pantano Sombrio (Medio)', value: 'swamp' },
+            { name: '🌋 Vulcao Ardente (Dificil)', value: 'volcano' },
+            { name: '⚔️ Masmorra Profunda (Dificil)', value: 'dungeon' },
+            { name: '🌑 Abismo Eterno (Extremo)', value: 'abyss' }
+          )
       )
   );
 
