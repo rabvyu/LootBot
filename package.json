@@ -7,7 +7,9 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "ts-node-dev --respawn src/index.ts",
-    "register-commands": "ts-node src/bot/registerCommands.ts"
+    "register-commands": "ts-node src/bot/registerCommands.ts",
+    "test": "ts-node src/tests/index.ts",
+    "test:watch": "ts-node-dev --respawn src/tests/index.ts"
   },
   "keywords": [
     "discord",

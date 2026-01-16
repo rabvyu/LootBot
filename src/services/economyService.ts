@@ -75,6 +75,22 @@ class EconomyService {
   }
 
   /**
+   * Add coins to user
+   */
+  async addCoins(discordId: string, amount: number, reason: string): Promise<number> {
+    const result = await economyRepository.addCoins(discordId, amount, 'earn', reason);
+    return result.newBalance;
+  }
+
+  /**
+   * Remove coins from user
+   */
+  async removeCoins(discordId: string, amount: number, reason: string): Promise<number | null> {
+    const result = await economyRepository.removeCoins(discordId, amount, 'spend', reason);
+    return result ? result.newBalance : null;
+  }
+
+  /**
    * Get shop items
    */
   async getShopItems(): Promise<ShopItemDocument[]> {

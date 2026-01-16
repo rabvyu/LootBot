@@ -13,7 +13,8 @@ export type BadgeCategory =
   | 'peripherals'
   | '3dprint'
   | 'modding'
-  | 'championship';
+  | 'championship'
+  | 'pvp';
 
 export type BadgeRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
 
@@ -30,7 +31,10 @@ export type RequirementType =
   | 'boost'
   | 'first_members'
   | 'competition'
-  | 'custom';
+  | 'custom'
+  | 'pvp_wins'
+  | 'pvp_streak'
+  | 'pvp_rank';
 
 export interface BadgeRequirement {
   type: RequirementType;

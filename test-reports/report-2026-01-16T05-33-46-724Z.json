@@ -1,0 +1,1580 @@
+{
+  "title": "Relatório de Testes - Bot de Gamificação Discord",
+  "suites": [
+    {
+      "suiteName": "Core - Sistema de XP",
+      "tests": [
+        {
+          "name": "Cálculo de XP para próximo nível",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Multiplicadores de XP funcionam corretamente",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Limites diários de XP são respeitados",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Level up detectado corretamente",
+          "passed": true,
+          "duration": 1
+        }
+      ],
+      "totalTests": 4,
+      "passed": 4,
+      "failed": 0,
+      "duration": 1,
+      "startedAt": "2026-01-16T05:33:46.684Z",
+      "completedAt": "2026-01-16T05:33:46.685Z"
+    },
+    {
+      "suiteName": "Core - Sistema de Personagem",
+      "tests": [
+        {
+          "name": "Criação de personagem com stats corretas",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Atributos iniciais corretos",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Cálculo de stats baseado em atributos",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "HP máximo escala com vitality",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Classes têm modificadores corretos",
+          "passed": true,
+          "duration": 1
+        }
+      ],
+      "totalTests": 5,
+      "passed": 5,
+      "failed": 0,
+      "duration": 1,
+      "startedAt": "2026-01-16T05:33:46.685Z",
+      "completedAt": "2026-01-16T05:33:46.686Z"
+    },
+    {
+      "suiteName": "Core - Sistema de Combate",
+      "tests": [
+        {
+          "name": "Cálculo de dano básico",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Cálculo de dano crítico",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Chance de evasão funciona",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Lifesteal calcula cura corretamente",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Ordem de turno baseada em speed",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 5,
+      "passed": 5,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.686Z",
+      "completedAt": "2026-01-16T05:33:46.686Z"
+    },
+    {
+      "suiteName": "Core - Sistema de Inventário",
+      "tests": [
+        {
+          "name": "Adicionar item ao inventário",
+          "passed": true,
+          "duration": 1
+        },
+        {
+          "name": "Stackar itens iguais",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Remover item do inventário",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Limite de slots de inventário",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 4,
+      "passed": 4,
+      "failed": 0,
+      "duration": 1,
+      "startedAt": "2026-01-16T05:33:46.686Z",
+      "completedAt": "2026-01-16T05:33:46.687Z"
+    },
+    {
+      "suiteName": "Economia - Transações Básicas",
+      "tests": [
+        {
+          "name": "Transferência de coins entre usuários",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Taxa de transferência aplicada corretamente",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Não permite transferência com saldo insuficiente",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.687Z",
+      "completedAt": "2026-01-16T05:33:46.687Z"
+    },
+    {
+      "suiteName": "Economia - Casa de Leilões",
+      "tests": [
+        {
+          "name": "Criar listagem de leilão",
+          "passed": true,
+          "duration": 1
+        },
+        {
+          "name": "Taxa de listagem calculada corretamente",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Dar lance válido",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Lance menor que mínimo rejeitado",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Buyout funciona corretamente",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Leilão expira corretamente",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Taxa de venda aplicada ao vendedor",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 7,
+      "passed": 7,
+      "failed": 0,
+      "duration": 1,
+      "startedAt": "2026-01-16T05:33:46.687Z",
+      "completedAt": "2026-01-16T05:33:46.688Z"
+    },
+    {
+      "suiteName": "Economia - Sistema de Trading",
+      "tests": [
+        {
+          "name": "Criar trade entre jogadores",
+          "passed": true,
+          "duration": 1
+        },
+        {
+          "name": "Adicionar items ao trade",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Adicionar coins ao trade",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Confirmação de ambos necessária",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Trade cancelado limpa dados",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Limite de trades por hora",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 6,
+      "passed": 6,
+      "failed": 0,
+      "duration": 1,
+      "startedAt": "2026-01-16T05:33:46.688Z",
+      "completedAt": "2026-01-16T05:33:46.689Z"
+    },
+    {
+      "suiteName": "Economia - Banco do Reino",
+      "tests": [
+        {
+          "name": "Depósito funciona corretamente",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Limite de depósito por nível",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Juros diários calculados corretamente",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Empréstimo com juros",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Limite de empréstimo por nível",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Saque não pode exceder saldo",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 6,
+      "passed": 6,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.689Z",
+      "completedAt": "2026-01-16T05:33:46.689Z"
+    },
+    {
+      "suiteName": "Economia - Prevenção de Exploits",
+      "tests": [
+        {
+          "name": "Preço mínimo de leilão respeitado",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Preço máximo de leilão respeitado",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Não pode dar lance em próprio item",
+          "passed": true,
+          "duration": 1
+        },
+        {
+          "name": "Trade lock para novos jogadores",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 4,
+      "passed": 4,
+      "failed": 0,
+      "duration": 1,
+      "startedAt": "2026-01-16T05:33:46.689Z",
+      "completedAt": "2026-01-16T05:33:46.690Z"
+    },
+    {
+      "suiteName": "Dungeons - Criação e Configuração",
+      "tests": [
+        {
+          "name": "Criar dungeon run",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Dificuldades têm modificadores corretos",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Requisitos de nível por dungeon",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Limite de participantes",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 4,
+      "passed": 4,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.690Z",
+      "completedAt": "2026-01-16T05:33:46.690Z"
+    },
+    {
+      "suiteName": "Dungeons - Sistema de Waves",
+      "tests": [
+        {
+          "name": "Gerar monstros por wave",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Boss aparece na última wave",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Progressão de waves",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Stats de monstros escalam por wave",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 4,
+      "passed": 4,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.690Z",
+      "completedAt": "2026-01-16T05:33:46.690Z"
+    },
+    {
+      "suiteName": "Dungeons - Sistema de Loot",
+      "tests": [
+        {
+          "name": "Loot distribuído entre participantes",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Bônus de loot por contribuição",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Drop rate de itens raros",
+          "passed": false,
+          "duration": 0,
+          "error": "Expected epic but got rare"
+        },
+        {
+          "name": "Modificador de loot por dificuldade",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 4,
+      "passed": 3,
+      "failed": 1,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.690Z",
+      "completedAt": "2026-01-16T05:33:46.690Z"
+    },
+    {
+      "suiteName": "Dungeons - Cooldowns e Limites",
+      "tests": [
+        {
+          "name": "Cooldown entre runs",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Limite diário de runs",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Reset de limite à meia-noite",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 2,
+      "startedAt": "2026-01-16T05:33:46.690Z",
+      "completedAt": "2026-01-16T05:33:46.692Z"
+    },
+    {
+      "suiteName": "Dungeons - Afixos Semanais (Mythic+)",
+      "tests": [
+        {
+          "name": "Afixos aplicados corretamente",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Nível Mythic+ aumenta dificuldade",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Timer de Mythic+ funciona",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.692Z",
+      "completedAt": "2026-01-16T05:33:46.692Z"
+    },
+    {
+      "suiteName": "PvP - Sistema de Rating",
+      "tests": [
+        {
+          "name": "Cálculo de rating Elo básico",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Rating não pode ficar negativo",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Ranks baseados em rating",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.692Z",
+      "completedAt": "2026-01-16T05:33:46.692Z"
+    },
+    {
+      "suiteName": "PvP - Matchmaking",
+      "tests": [
+        {
+          "name": "Encontrar oponente em range de rating",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Range expande com tempo de espera",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Timeout de matchmaking",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.692Z",
+      "completedAt": "2026-01-16T05:33:46.692Z"
+    },
+    {
+      "suiteName": "PvP - Simulação de Combate",
+      "tests": [
+        {
+          "name": "Primeiro ataque baseado em speed",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Dano reduzido por defesa",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Vitória quando HP adversário <= 0",
+          "passed": true,
+          "duration": 1
+        },
+        {
+          "name": "Empate após máximo de rounds",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 4,
+      "passed": 4,
+      "failed": 0,
+      "duration": 1,
+      "startedAt": "2026-01-16T05:33:46.692Z",
+      "completedAt": "2026-01-16T05:33:46.693Z"
+    },
+    {
+      "suiteName": "PvP - Temporadas",
+      "tests": [
+        {
+          "name": "Reset de rating no fim da temporada",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Recompensas por rank final",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Decay de rating para inatividade",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.693Z",
+      "completedAt": "2026-01-16T05:33:46.693Z"
+    },
+    {
+      "suiteName": "PvP - Guild Wars",
+      "tests": [
+        {
+          "name": "Matchmaking de guildas por level",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Pontuação de guild war",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 2,
+      "passed": 2,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.693Z",
+      "completedAt": "2026-01-16T05:33:46.693Z"
+    },
+    {
+      "suiteName": "Quests - Sistema Básico",
+      "tests": [
+        {
+          "name": "Criar quest com objetivos",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Verificar pré-requisitos de quest",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Verificar requisito de nível",
+          "passed": true,
+          "duration": 1
+        },
+        {
+          "name": "Quest types são válidos",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 4,
+      "passed": 4,
+      "failed": 0,
+      "duration": 1,
+      "startedAt": "2026-01-16T05:33:46.693Z",
+      "completedAt": "2026-01-16T05:33:46.694Z"
+    },
+    {
+      "suiteName": "Quests - Progresso",
+      "tests": [
+        {
+          "name": "Atualizar progresso de objetivo kill",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Quest completa quando todos objetivos cumpridos",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Progresso não excede quantidade necessária",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.694Z",
+      "completedAt": "2026-01-16T05:33:46.694Z"
+    },
+    {
+      "suiteName": "Quests - Recompensas",
+      "tests": [
+        {
+          "name": "Calcular recompensas de quest",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Recompensas bônus por dificuldade",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Claim de recompensas só uma vez",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.694Z",
+      "completedAt": "2026-01-16T05:33:46.694Z"
+    },
+    {
+      "suiteName": "Quests - Daily/Weekly",
+      "tests": [
+        {
+          "name": "Daily quest reseta à meia-noite",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Weekly quest reseta na segunda-feira",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Limite de daily quests",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 1,
+      "startedAt": "2026-01-16T05:33:46.694Z",
+      "completedAt": "2026-01-16T05:33:46.695Z"
+    },
+    {
+      "suiteName": "Quests - Main Story",
+      "tests": [
+        {
+          "name": "Chapters desbloqueiam em ordem",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Diálogo de NPC com escolhas",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 2,
+      "passed": 2,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.695Z",
+      "completedAt": "2026-01-16T05:33:46.695Z"
+    },
+    {
+      "suiteName": "Quests - Guild Quests",
+      "tests": [
+        {
+          "name": "Contribuição dividida entre membros",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Progresso compartilhado entre membros",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 2,
+      "passed": 2,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.695Z",
+      "completedAt": "2026-01-16T05:33:46.695Z"
+    },
+    {
+      "suiteName": "Conquistas - Tracking de Stats",
+      "tests": [
+        {
+          "name": "Incrementar stat de monstros mortos",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Múltiplos stats atualizados juntos",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Stats não podem ser negativos",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.695Z",
+      "completedAt": "2026-01-16T05:33:46.695Z"
+    },
+    {
+      "suiteName": "Conquistas - Verificação de Progresso",
+      "tests": [
+        {
+          "name": "Conquista desbloqueada ao atingir meta",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Progresso parcial calculado corretamente",
+          "passed": true,
+          "duration": 1
+        },
+        {
+          "name": "Conquista secreta não mostra descrição",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 1,
+      "startedAt": "2026-01-16T05:33:46.695Z",
+      "completedAt": "2026-01-16T05:33:46.696Z"
+    },
+    {
+      "suiteName": "Conquistas - Recompensas",
+      "tests": [
+        {
+          "name": "Calcular recompensas por raridade",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Pontos de conquista acumulados",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Título desbloqueado com conquista",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.696Z",
+      "completedAt": "2026-01-16T05:33:46.696Z"
+    },
+    {
+      "suiteName": "Conquistas - Categorias",
+      "tests": [
+        {
+          "name": "Filtrar conquistas por categoria",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Todas as categorias existem",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Progresso por categoria",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.696Z",
+      "completedAt": "2026-01-16T05:33:46.696Z"
+    },
+    {
+      "suiteName": "Conquistas - Leaderboard",
+      "tests": [
+        {
+          "name": "Ranking por pontos totais",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Posição do jogador no ranking",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 2,
+      "passed": 2,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.696Z",
+      "completedAt": "2026-01-16T05:33:46.696Z"
+    },
+    {
+      "suiteName": "Conquistas - Claim System",
+      "tests": [
+        {
+          "name": "Marcar conquista como reivindicada",
+          "passed": true,
+          "duration": 1
+        },
+        {
+          "name": "Listar conquistas não reivindicadas",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Claim all funciona",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 1,
+      "startedAt": "2026-01-16T05:33:46.696Z",
+      "completedAt": "2026-01-16T05:33:46.697Z"
+    },
+    {
+      "suiteName": "Mini-Games - Sistema de Pesca",
+      "tests": [
+        {
+          "name": "Zonas têm peixes diferentes",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Chance de pesca baseada em raridade",
+          "passed": false,
+          "duration": 0,
+          "error": "Expected epic but got rare"
+        },
+        {
+          "name": "Isca melhora chances",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Cooldown de pesca",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "XP de pesca baseado na raridade",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 5,
+      "passed": 4,
+      "failed": 1,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.697Z",
+      "completedAt": "2026-01-16T05:33:46.697Z"
+    },
+    {
+      "suiteName": "Mini-Games - Sistema de Mineração",
+      "tests": [
+        {
+          "name": "Diferentes minas com minérios",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Ferramenta afeta yield",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Chance de gema rara",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Energia consumida por mineração",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 4,
+      "passed": 4,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.697Z",
+      "completedAt": "2026-01-16T05:33:46.697Z"
+    },
+    {
+      "suiteName": "Mini-Games - Cassino",
+      "tests": [
+        {
+          "name": "Roleta - aposta em número",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Roleta - aposta em cor",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Blackjack - valor da mão",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Slots - combinações",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Limites de aposta",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Tracking de perdas diárias",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 6,
+      "passed": 6,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.697Z",
+      "completedAt": "2026-01-16T05:33:46.697Z"
+    },
+    {
+      "suiteName": "Mini-Games - Trivia",
+      "tests": [
+        {
+          "name": "Pergunta do dia única",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Resposta correta dá XP",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Streak quebra com resposta errada",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Recompensas por milestone de streak",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 4,
+      "passed": 4,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.698Z",
+      "completedAt": "2026-01-16T05:33:46.698Z"
+    },
+    {
+      "suiteName": "Mini-Games - Eventos Especiais",
+      "tests": [
+        {
+          "name": "Evento de pesca dobra drops",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Gold Rush aumenta chance de ouro",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 2,
+      "passed": 2,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.698Z",
+      "completedAt": "2026-01-16T05:33:46.698Z"
+    },
+    {
+      "suiteName": "Guildas - Criação e Configuração",
+      "tests": [
+        {
+          "name": "Criar guilda com dados válidos",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Limite de caracteres no nome",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Tag deve ter 3-5 caracteres",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Custo de criação de guilda",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 4,
+      "passed": 4,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.698Z",
+      "completedAt": "2026-01-16T05:33:46.698Z"
+    },
+    {
+      "suiteName": "Guildas - Sistema de Membros",
+      "tests": [
+        {
+          "name": "Adicionar membro à guilda",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Limite de membros por nível",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Não pode entrar em guilda cheia",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Hierarquia de cargos",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 4,
+      "passed": 4,
+      "failed": 0,
+      "duration": 1,
+      "startedAt": "2026-01-16T05:33:46.698Z",
+      "completedAt": "2026-01-16T05:33:46.699Z"
+    },
+    {
+      "suiteName": "Guildas - Sistema de XP e Nível",
+      "tests": [
+        {
+          "name": "Contribuição de XP",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Level up de guilda",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Perks por nível",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.699Z",
+      "completedAt": "2026-01-16T05:33:46.699Z"
+    },
+    {
+      "suiteName": "Guildas - Banco da Guilda",
+      "tests": [
+        {
+          "name": "Depositar no banco",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Sacar do banco (apenas officers+)",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Log de transações",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.699Z",
+      "completedAt": "2026-01-16T05:33:46.699Z"
+    },
+    {
+      "suiteName": "Guildas - Convites",
+      "tests": [
+        {
+          "name": "Criar convite com expiração",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Convite expirado não funciona",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Convite com máximo de usos",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.699Z",
+      "completedAt": "2026-01-16T05:33:46.699Z"
+    },
+    {
+      "suiteName": "Guildas - Guild Wars",
+      "tests": [
+        {
+          "name": "Declarar guerra entre guildas",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Batalha 5v5 em guild war",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Vitória por melhor de 5",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 1,
+      "startedAt": "2026-01-16T05:33:46.699Z",
+      "completedAt": "2026-01-16T05:33:46.700Z"
+    },
+    {
+      "suiteName": "Prestige - Requisitos",
+      "tests": [
+        {
+          "name": "Requer nível 100 para rebirth",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Não pode rebirth abaixo do nível",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Confirmação necessária para rebirth",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.700Z",
+      "completedAt": "2026-01-16T05:33:46.700Z"
+    },
+    {
+      "suiteName": "Prestige - Cálculo de Pontos",
+      "tests": [
+        {
+          "name": "Pontos base por rebirth",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Bônus por conquistas",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Bônus por raids completadas",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Bônus de primeiro rebirth",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Total de pontos calculado",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 5,
+      "passed": 5,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.700Z",
+      "completedAt": "2026-01-16T05:33:46.700Z"
+    },
+    {
+      "suiteName": "Prestige - Reset de Progresso",
+      "tests": [
+        {
+          "name": "Level reseta para 1",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Coins mantidos parcialmente (50%)",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Skills resetadas",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Conquistas mantidas",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Títulos mantidos",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 5,
+      "passed": 5,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.700Z",
+      "completedAt": "2026-01-16T05:33:46.700Z"
+    },
+    {
+      "suiteName": "Prestige - Upgrades Permanentes",
+      "tests": [
+        {
+          "name": "XP Boost comprável",
+          "passed": true,
+          "duration": 1
+        },
+        {
+          "name": "Múltiplos upgrades",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Upgrade máximo não pode ser excedido",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Custo de Herança (manter equipamento)",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 4,
+      "passed": 4,
+      "failed": 0,
+      "duration": 1,
+      "startedAt": "2026-01-16T05:33:46.700Z",
+      "completedAt": "2026-01-16T05:33:46.701Z"
+    },
+    {
+      "suiteName": "Prestige - Níveis de Prestige",
+      "tests": [
+        {
+          "name": "Prestige level baseado em rebirths",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Títulos por prestige level",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Cor do nome por prestige",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.701Z",
+      "completedAt": "2026-01-16T05:33:46.701Z"
+    },
+    {
+      "suiteName": "Prestige - Estatísticas",
+      "tests": [
+        {
+          "name": "Total de rebirths rastreado",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Pontos de prestige acumulados",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 2,
+      "passed": 2,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.701Z",
+      "completedAt": "2026-01-16T05:33:46.701Z"
+    },
+    {
+      "suiteName": "Housing - Base do Aventureiro",
+      "tests": [
+        {
+          "name": "Níveis de base",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Upgrade de base",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Slots de armazém por nível",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.701Z",
+      "completedAt": "2026-01-16T05:33:46.701Z"
+    },
+    {
+      "suiteName": "Housing - NPCs Contratáveis",
+      "tests": [
+        {
+          "name": "Lista de NPCs disponíveis",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Limite de NPCs por nível de base",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Pagamento semanal de NPC",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "NPC demitido se não pagar",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 4,
+      "passed": 4,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.701Z",
+      "completedAt": "2026-01-16T05:33:46.701Z"
+    },
+    {
+      "suiteName": "Housing - Sistema de Jardim",
+      "tests": [
+        {
+          "name": "Plantar semente",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Verificar se planta está pronta",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Colher planta",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Regar aumenta qualidade",
+          "passed": true,
+          "duration": 1
+        },
+        {
+          "name": "Fertilizante acelera crescimento",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Tipos de sementes",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 6,
+      "passed": 6,
+      "failed": 0,
+      "duration": 1,
+      "startedAt": "2026-01-16T05:33:46.701Z",
+      "completedAt": "2026-01-16T05:33:46.702Z"
+    },
+    {
+      "suiteName": "Housing - Estações de Crafting",
+      "tests": [
+        {
+          "name": "Bônus de crafting por estação",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Upgrade de estação",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 2,
+      "passed": 2,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.702Z",
+      "completedAt": "2026-01-16T05:33:46.702Z"
+    },
+    {
+      "suiteName": "Housing - Portal de Dungeon",
+      "tests": [
+        {
+          "name": "Redução de cooldown por portal",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Portal só disponível em base nível 5+",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Teleporte para dungeon específica",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 3,
+      "passed": 3,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.702Z",
+      "completedAt": "2026-01-16T05:33:46.702Z"
+    },
+    {
+      "suiteName": "Housing - Decorações",
+      "tests": [
+        {
+          "name": "Decorações cosméticas",
+          "passed": true,
+          "duration": 0
+        },
+        {
+          "name": "Limite de decorações por slot",
+          "passed": true,
+          "duration": 0
+        }
+      ],
+      "totalTests": 2,
+      "passed": 2,
+      "failed": 0,
+      "duration": 0,
+      "startedAt": "2026-01-16T05:33:46.702Z",
+      "completedAt": "2026-01-16T05:33:46.702Z"
+    }
+  ],
+  "summary": {
+    "totalSuites": 54,
+    "totalTests": 194,
+    "totalPassed": 192,
+    "totalFailed": 2,
+    "passRate": 99,
+    "totalDuration": 18
+  },
+  "generatedAt": "2026-01-16T05:33:46.702Z"
+}

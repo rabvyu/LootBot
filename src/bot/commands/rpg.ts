@@ -11,7 +11,8 @@ import {
 } from 'discord.js';
 import { rpgService } from '../../services/rpgService';
 import { tamingService } from '../../services/tamingService';
-import { CharacterClass } from '../../database/models/Character';
+import { equipmentService } from '../../services/equipmentService';
+import { CharacterClass, BaseCharacterClass } from '../../database/models/Character';
 
 export const data = new SlashCommandBuilder()
   .setName('rpg')
@@ -179,7 +180,7 @@ async function handleCriar(interaction: ChatInputCommandInteraction) {
       time: 60000,
     }) as StringSelectMenuInteraction;
 
-    const selectedClass = selectInteraction.values[0] as CharacterClass;
+    const selectedClass = selectInteraction.values[0] as BaseCharacterClass;
     const result = await rpgService.createCharacter(discordId, nome, selectedClass);
 
     if (result.success && result.character) {
@@ -301,6 +302,12 @@ async function handleBatalhar(interaction: ChatInputCommandInteraction) {
       rewardLines.push(`📦 **Drops:** ${dropsText}`);
     }
 
+    if (result.equipmentDrop) {
+      const eq = result.equipmentDrop;
+      const rarityEmoji = equipmentService.getRarityEmoji(eq.rarity);
+      rewardLines.push(`⚔️ **EQUIPAMENTO:** ${rarityEmoji} ${eq.name}`);
+    }
+
     embed.addFields({ name: '🎁 Recompensas', value: rewardLines.join('\n'), inline: false });
   }
 
@@ -369,6 +376,12 @@ async function handleExplorar(interaction: ChatInputCommandInteraction) {
     if (result.drops.length > 0) {
       const dropsText = result.drops.map(d => `${d.resourceId} x${d.amount}`).join(', ');
       rewardLines.push(`📦 **Drops:** ${dropsText}`);
+    }
+
+    if (result.equipmentDrop) {
+      const eq = result.equipmentDrop;
+      const rarityEmoji = equipmentService.getRarityEmoji(eq.rarity);
+      rewardLines.push(`⚔️ **EQUIPAMENTO:** ${rarityEmoji} ${eq.name}`);
     }
 
     embed.addFields({ name: '🎁 Recompensas', value: rewardLines.join('\n'), inline: false });

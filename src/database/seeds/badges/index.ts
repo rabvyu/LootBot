@@ -1,5 +1,5 @@
 /**
- * Index de todas as badges - 151 badges no total
+ * Index de todas as badges - 166 badges no total
  */
 
 import { BadgeDefinition } from './types';
@@ -14,6 +14,10 @@ import { printBadges } from './08-3dprint';
 import { moddingBadges } from './09-modding';
 import { championshipBadges } from './10-championships';
 import { specialBadges } from './11-special';
+import { pvpBadges } from './12-pvp';
+import { giftBadges } from './13-gifts';
+import { raidBadges } from './14-raids';
+import { tournamentBadges } from './15-tournaments';
 
 // Combinar todas as badges
 export const allBadges: BadgeDefinition[] = [
@@ -28,7 +32,11 @@ export const allBadges: BadgeDefinition[] = [
   ...moddingBadges,          // 15 badges
   ...championshipBadges,     // 15 badges
   ...specialBadges,          // 15 badges
-];                           // Total: 151 badges
+  ...pvpBadges,              // 11 badges
+  ...giftBadges,             // 4 badges
+  ...raidBadges,             // 9 badges
+  ...tournamentBadges,       // 7 badges
+];                           // Total: 182 badges
 
 // Exportar por categoria para uso individual
 export {
@@ -43,6 +51,10 @@ export {
   moddingBadges,
   championshipBadges,
   specialBadges,
+  pvpBadges,
+  giftBadges,
+  raidBadges,
+  tournamentBadges,
 };
 
 // Exportar tipos
@@ -69,7 +81,7 @@ export const badgeStats = {
   byCategory: {
     level: progressionBadges.length,
     time: timeBadges.length,
-    achievement: socialBadges.length,
+    achievement: socialBadges.length + giftBadges.length + raidBadges.length + tournamentBadges.length,
     hardware: hardwareBadges.length,
     overclocking: overclockingBadges.length,
     setup: setupwarsBadges.length,
@@ -78,6 +90,7 @@ export const badgeStats = {
     modding: moddingBadges.length,
     championship: championshipBadges.length,
     special: specialBadges.length,
+    pvp: pvpBadges.length,
   },
   byRarity: {
     common: allBadges.filter(b => b.rarity === 'common').length,
